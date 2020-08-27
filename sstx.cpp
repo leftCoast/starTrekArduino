@@ -659,11 +659,14 @@ void skip(int i) {
       MyPutChar('\n');
   }
 }
+
+/*
 void proutn(char *s) 
 {
   //fputs(s, stdout);
   Serial.print(s);
 }
+*/
 
 void prout(char *s) {
   proutn(s);

@@ -8,7 +8,7 @@ void setup() {
   randomSeed(analogRead(0));
   Serial.begin(115200);
   for (int lp = 0; lp < 12; lp++) {
-    delay(1000);
+    delay(500);
     Serial.println(".");
   }
   Serial.println("SST");
@@ -25,3 +25,7 @@ int getch() {
   while (!Serial.available());
   return Serial.read();
 }
+
+
+// And where it all goes out..
+void proutn(char *s) { Serial.print(s);}

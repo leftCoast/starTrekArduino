@@ -119,6 +119,7 @@ static void listCommands(int x) {
   prout((char*)"");
 }
 
+/*
 void MyGets(char *str,int len)
 {
 int count=0;
@@ -134,16 +135,27 @@ while(count<len-1)
     }
   }
 }
+*/
 
-void MyPuts(const char* s)
-{
-Serial.print(s);  
+void MyGets(char *str,int len) {
+
+	int	count=0;
+	char	ch;
+	
+	while(count<len-1) {
+		ch = (char)getch();
+		str[count++]=ch;
+		str[count]=0;
+		if(ch=='\n') {
+			return;      
+		}
+	}
 }
 
-void MyPutChar(char ch)
-{
-Serial.print(ch);  
-}
+void MyPuts(const char* s) { proutn(s); }
+
+void MyPutChar(char c) { proutCh(c); }
+
 
 static void helpme(void) {
   //int i;
@@ -154,6 +166,7 @@ static void helpme(void) {
   prout((char*)"   computer. You need to find SST.DOC and put it in the");
   prout((char*)"   current directory.\"");
 }
+
 
 static void makemoves(void) {
   int i, hitme;
@@ -441,6 +454,10 @@ int runsst (int argc, char **argv)
   prout((char*)"May the Great Bird of the Galaxy roost upon your home planet.");
   return 0;
 }
+
+
+void doMakeMoves(void) { makemoves(); } // Hook for Arduino to call makemoves();
+
 
 void cramen(int i) 
 {

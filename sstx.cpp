@@ -5,10 +5,7 @@
 #ifdef MSDOS
 #include <dos.h>
 #endif
-//#include <time.h>
 
-/*int getch(void);
-*/
 
 static char line[128], *linep = line;
 static int linecount;	/* for paging */
@@ -97,15 +94,15 @@ static char *commands[] = {
 const int NUMCOMMANDS = (sizeof(commands)/sizeof(char *));
 
 static void listCommands(int x) {
-  prout((char*)"   SRSCAN    MOVE      PHASERS   CALL\n"
-        "   STATUS    IMPULSE   PHOTONS   ABANDON\n"
-        "   LRSCAN    WARP      SHIELDS   DESTRUCT\n"
-        "   CHART     REST      DOCK      QUIT\n"
-        "   DAMAGES   REPORT    SENSORS   ORBIT\n"
-        "   TRANSPORT MINE      CRYSTALS  SHUTTLE\n"
-        "   PLANETS   REQUEST   DEATHRAY  FREEZE\n"
-        "   COMPUTER  EMEXIT    PROBE     COMMANDS");
-  proutn((char*)"   ");
+  prout((char*)"SRSCAN    MOVE    PHASERS  CALL\n"
+        "STATUS    IMPULSE PHOTONS  ABANDON\n"
+        "LRSCAN    WARP    SHIELDS  DESTRUCT\n"
+        "CHART     REST    DOCK     QUIT\n"
+        "DAMAGES   REPORT  SENSORS  ORBIT\n"
+        "TRANSPORT MINE    CRYSTALS SHUTTLE\n"
+        "PLANETS   REQUEST DEATHRAY FREEZE\n"
+        "COMPUTER  EMEXIT  PROBE    COMMANDS");
+  //proutn((char*)"   ");
 #ifdef SCORE
   proutn((char*)"SCORE     ");
 #endif
@@ -119,38 +116,23 @@ static void listCommands(int x) {
   prout((char*)"");
 }
 
-/*
-void MyGets(char *str,int len)
-{
-int count=0;
-while(count<len-1)
-  {
-  if(Serial.available())
-    {
-    char ch=Serial.read();
-    str[count++]=ch;
-    str[count]=0;
-    if(ch=='\n')
-      return;      
-    }
-  }
-}
-*/
 
-void MyGets(char *str,int len) {
+void MyGets(char* str,int len) {
 
 	int	count=0;
 	char	ch;
 	
 	while(count<len-1) {
 		ch = (char)getch();
-		str[count++]=ch;
-		str[count]=0;
+		str[count]=ch;
+		count++;
+		str[count]='\0';
 		if(ch=='\n') {
 			return;      
 		}
 	}
 }
+
 
 void MyPuts(const char* s) { proutn(s); }
 
@@ -169,7 +151,9 @@ static void helpme(void) {
 
 
 static void makemoves(void) {
+
   int i, hitme;
+  
   while (TRUE) { /* command loop */
     hitme = FALSE;
     justin = 0;
@@ -209,9 +193,9 @@ static void makemoves(void) {
          ) break;
 
       if (skill <= SFAIR) {
-        prout((char*)"UNRECOGNIZED COMMAND. LEGAL COMMANDS ARE:");
+        prout((char*)"UNKNOWN COMMAND. LEGAL COMMANDS ARE:\n");
         listCommands(TRUE);
-      } else prout((char*)"UNRECOGNIZED COMMAND.");
+      } else prout((char*)"UNKNOWN COMMAND.");
     }
     switch (i) { /* command switch */
       case 0: // srscan
@@ -487,7 +471,7 @@ void cramlc(int key, int x, int y)
   else if (key == 2) proutn((char*)" Sector");
   proutn((char*)" ");
   crami(x, 1);
-  proutn((char*)" - ");
+  proutn((char*)",");
   crami(y, 1);
 }
 
@@ -650,14 +634,14 @@ void pause(int i) {
     if (skill > SFAIR)
       prout((char*)"[ANNOUNCEMENT ARRIVING...]");
     else
-      prout((char*)"[IMPORTANT ANNOUNCEMENT ARRIVING -- HIT SPACE BAR TO CONTINUE]");
+      prout((char*)"[IMPORTANT ANNOUNCEMENT ARRIVING -- HIT ENTER TO CONTINUE]");
     getch();
   }
   else {
     if (skill > SFAIR)
       proutn((char*)"[CONTINUE?]");
     else
-      proutn((char*)"[HIT SPACE BAR TO CONTINUE]");
+      proutn((char*)"[HIT ENTER TO CONTINUE]");
     getch();
     proutn((char*)"\r                           \r");
   }
@@ -677,29 +661,12 @@ void skip(int i) {
   }
 }
 
-/*
-void proutn(char *s) 
-{
-  //fputs(s, stdout);
-  Serial.print(s);
-}
-*/
 
 void prout(char *s) {
   proutn(s);
   skip(1);
 }
 
-void prouts(char *s) {
-  //	clock_t endTime;
-  /* print slowly! */
-  //	while (*s) {
-  //		endTime = clock() + CLOCKS_PER_SEC*0.05;
-  //		while (clock() < endTime) ;
-  MyPuts(s);
-//  fflush(stdout);
-  //	}
-}
 
 void huh(void) 
 {

@@ -271,7 +271,7 @@ void chart(int nn)
 	}
 }
 		
-		
+/*		
 void srscan(int l) 
 {
 	static char requests[][3] =
@@ -284,7 +284,7 @@ void srscan(int l)
 	switch (l) {
 		case 1: // SRSCAN
 			if (damage[DSRSENS] != 0) {
-				/* Allow base's sensors if docked */
+				// Allow base's sensors if docked 
 				if (condit != IHDOCKED) {
 					prout((char*)"SHORT-RANGE SENSORS DAMAGED");
 					goodScan=FALSE;
@@ -350,6 +350,7 @@ void srscan(int l)
 				}
 			}
 		}
+		
 		if (rightside) {
 			switch (jj) {
 				case 1:
@@ -429,7 +430,182 @@ void srscan(int l)
 	}
 	if (nn) chart(1);
 }
+*/	
+
+
+// Short range scan. But what is this "l" we are passing in? It is used in a giant switch
+// statment to select who knows what?
+void srscan(int l) {
+	
+	static char requests[][3] = {"","da","co","po","ls","wa","en","to","sh","kl","ti"};
+	char*	cp;
+	bool	leftside;
+	bool	rightside;
+	int	i; 
+	int	j;
+	int	k;
+	bool	nn;
+	bool	goodScan;
+  	char	buf[128];
+  
+  	leftside		= true;
+	rightside	= true;
+	k				= 0;
+	nn				= false;
+	goodScan		= true;
+	switch (l) {
+		case 1: // SRSCAN
+			MyPuts("   Quadrant : ");											   // Lets put out our position as the Title line.
+			cramlc(0, quadx, quady);												// Format and output quadrant.
+			MyPuts("   Sector : ");												// Ouput a comma..
+			cramlc(0, sectx, secty);												// And lets see the sector.
 			
+			if (damage[DSRSENS] != 0) {											// If sensors are damaged..
+				if (condit != IHDOCKED) {											// Allow base's sensors if docked.
+					prout((char*)"SHORT-RANGE SENSORS DAMAGED");				// Tell 'em we got no sensors.
+					goodScan = false;													// Note we didn't do a scan.
+				} else {																	// Else, we are docked..
+					prout((char*)"[Using starbase's sensors]");				// Tell 'em we're using the starbase sensor array.
+				}
+			}
+			if (goodScan) {															// If we had a good scan..
+				if (damage[DRADIO]>0.0) {											// If the radio is damaged?
+					starch[quadx][quady] = d.galaxy[quadx][quady]+1000;	// We put something into the star chart, not sure what. But its 1000 more than the galaxy spot.
+				} else {																	// Else, no radio damage?
+					starch[quadx][quady] = 1;										// We put a 1 into the star chart. Very confusing..
+				}
+			}
+			scan();
+			if (isit((char*)"chart")) nn = TRUE;
+			if (isit((char*)"no")) rightside = FALSE;
+			chew();
+			prout((char*)"\n    1 2 3 4 5 6 7 8 9 10");
+			break;
+		case 2: // REQUEST
+			while (scan() == IHEOL)
+				MyPuts("Information desired? ");
+			chew();
+			for (k = 1; k <= 10; k++)
+				if (strncmp(citem,requests[k],min(2,strlen(citem)))==0)
+					break;
+			if (k > 10) {
+				prout((char*)"UNRECOGNIZED REQUEST. Legal requests are:\n"
+					 "  date, condition, position, lsupport, warpfactor,\n"
+					 "  energy, torpedoes, shields, klingons, time.");
+				return;
+			}
+			// no "break"
+		case 3: // STATUS
+			chew();
+			leftside = FALSE;
+			skip(1);
+	}
+	for (i = 1; i <= 10; i++) {
+		int jj = (k!=0 ? k : i);
+		if (leftside) {
+			if (coordfixed) {
+				sprintf(buf,"%2d  ", 11-i);
+        MyPuts(buf);
+				for (j = 1; j <= 10; j++) {
+					if (goodScan || (abs((11-i)-secty)<= 1 && abs(j-sectx) <= 1))
+            {
+						sprintf(buf,"%c ",quad[j][11-i]);
+            MyPuts(buf);
+            }
+					else
+						MyPuts("- ");
+				}
+			} else {
+				sprintf(buf,"%2d  ", i);
+        MyPuts(buf);
+        
+				for (j = 1; j <= 10; j++) {
+					if (goodScan || (abs(i-sectx)<= 1 && abs(j-secty) <= 1))
+            {
+						sprintf(buf,"%c ",quad[i][j]);
+            MyPuts(buf);
+            }
+					else
+						MyPuts("- ");
+				}
+			}
+		}
+		
+		if (rightside) {
+			switch (jj) {
+				case 1:
+					sprintf(buf," Std %.1f", d.date);
+          MyPuts(buf);
+					break;
+				case 2:
+					if (condit != IHDOCKED) newcnd();
+					switch (condit) {
+						case IHRED: cp = (char*)"RED"; break;
+						case IHGREEN: cp = (char*)"GREEN"; break;
+						case IHYELLOW: cp = (char*)"YELLOW"; break;
+						case IHDOCKED: cp = (char*)"DOCKED"; break;
+					}
+					sprintf(buf," Cond %s", cp);
+          MyPuts(buf);
+#ifdef CLOAKING
+				    if (iscloaked) MyPuts(", CLOAKED");
+#endif
+					break;
+				case 3:
+					MyPuts(" Life Spt");
+					if (damage[DLIFSUP] != 0.0) {
+						if (condit == IHDOCKED)
+							MyPuts(" On");
+						else {
+							sprintf(buf," Res. =%4.1f", lsupres);
+              			MyPuts(buf);
+              		}
+					}
+					else
+						MyPuts(" On");
+					break;
+				case 4:
+					sprintf(buf," Warp %.1f", warpfac);
+          MyPuts(buf);
+					break;
+				case 5:
+					sprintf(buf," E %.1f", energy);
+          MyPuts(buf);
+					break;
+				case 6:
+					sprintf(buf," Torp %d", torps);
+          MyPuts(buf);
+					break;
+				case 7:
+					MyPuts(" Shld ");
+					if (damage[DSHIELD] != 0)
+						MyPuts("Dmg");
+					else if (shldup)
+						MyPuts("Up");
+					else
+						MyPuts("Off");
+				break;
+				case 8:
+					MyPuts(" Shld ");
+					sprintf(buf," %d%%",(int)((100.0*shield)/inshld + 0.5));
+					 MyPuts(buf);
+				break;	
+				case 9:
+					sprintf(buf," Klingons %d", d.remkl);
+          MyPuts(buf);
+					break;
+				case 10:
+					sprintf(buf," T left %.1f", d.remtime);
+          MyPuts(buf);
+					break;
+			}
+					
+		}
+		skip(1);
+		if (k!=0) return;
+	}
+	if (nn) chart(1);
+}
 void eta(void) {
 	int ix1, ix2, iy1, iy2, prompt=FALSE;
 	int wfl;

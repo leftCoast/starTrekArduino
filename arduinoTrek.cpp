@@ -61,7 +61,7 @@ void arduinoTrekSetup(void) {
 
 	trekComBuffer = new textBuff(COMBUFF_BYTES);			// Allocate your command buffer.
 	trekReplyBuffer = new textBuff(REPLYBUFF_BYTES);	// Allocate the reply buffer.
-	trekComBuffer->addStr("r s n xxx m a 3 4 5 6 \n");						// You can preload startup commands. Good for debug otherwise comment this out.			
+	//trekComBuffer->addStr("r s n xxx m a 3 4 5 6 \n");						// You can preload startup commands. Good for debug otherwise comment this out.			
 	prelim();														// Who knows? Some ster Trek thing.
 	fromcommandline = 0;											// This as well is a complete mystery.
 }

@@ -621,7 +621,7 @@ double square(double i) {
   return i * i;
 }
 
-static void clearscreen(void) {
+void clearscreen(void) {
   /* Somehow we need to clear the screen */
   proutn((char*)"\n\n\n\n\n\n\n\n\n\n\n\n");	/* Hope for an ANSI display */ // It ain't. So we do the linefeed thing.
   

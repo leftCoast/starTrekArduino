@@ -241,7 +241,7 @@ void vaporPartyDeath(void) {
 }
 
 
-void	standedDeath(void) {
+void	strandedDeath(void) {
 
 	prout((char*)"You are left with your landing party on");
 	prout((char*)"a wild jungle planet inhabited by primitive cannibals.");
@@ -434,7 +434,7 @@ void finish(FINTYPE ifin) {
 		case FMATERIALIZE:	rematerializeError();	break;
 		case FPHASER:			phaserDeath();				break;
 		case FLOST:				vaporPartyDeath();		break;
-		case FMINING:			standedDeath();			break;
+		case FMINING:			strandedDeath();			break;
 		case FDPLANET:			blowUpPlanetDeath();		break;
 		case FSSC: prout((char*)"The Galileo is instantly annihilated by the supernova."); // no break;
 		case FPNOVA:			shuttleCookedDeath();	break;
@@ -457,6 +457,7 @@ void finish(FINTYPE ifin) {
 	fuzzyEnding();	// Some sort of "sue for peace" thing.
 	score(0);
 }
+
 
 void score(int inGame) {
 	

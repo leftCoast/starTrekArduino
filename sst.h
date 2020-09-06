@@ -454,11 +454,12 @@ void debugme(void);
 void attakreport(void);
 void movetho(void);
 void probe(void);
+void clearscreen(void);
 
 // Arduino calls
 //void close(void);
-//void out(char* str);
-//void outln(char* str);
+void out(char* str);
+void outln(char* str);
 
 #ifndef WINDOWS
 int min(int, int);

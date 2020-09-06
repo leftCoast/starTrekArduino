@@ -33,10 +33,11 @@ void report(int f) {
 	char	buf[128];
 
 	chew();
-        if(thawed)
-          s1 = (char*)"thawed ";
-        else
-          s1=(char*)"";
+	if(thawed) {
+		s1 = (char*)"thawed ";
+	} else {
+		s1=(char*)"";
+	}
 	switch (length) {
 		case 1: s2=(char*)"short"; break;
 		case 2: s2=(char*)"medium"; break;
@@ -153,6 +154,7 @@ void report(int f) {
 	}
 	skip(1);
 }
+
 	
 void lrscan(void) {
 	
@@ -176,39 +178,40 @@ void lrscan(void) {
 	}
 	cramlc(1, quadx, quady);
 	skip(1);
-	if (coordfixed)
-	for (y = quady+1; y >= quady-1; y--) {
+	if (coordfixed) {
+		for (y = quady+1; y >= quady-1; y--) {
+			for (x = quadx-1; x <= quadx+1; x++) {
+				if (x == 0 || x > 8 || y == 0 || y > 8)
+					MyPuts("   -1");
+				else {
+					sprintf(buf,"%5d", d.galaxy[x][y]);
+					proutn(buf);
+					// If radio works, mark star chart so
+					// it will show current information.
+					// Otherwise mark with current
+					// value which is fixed. 
+					starch[x][y] = damage[DRADIO] > 0 ? d.galaxy[x][y]+1000 :1;
+				}
+			}
+			MyPutChar('\n');
+		}
+	} else {
 		for (x = quadx-1; x <= quadx+1; x++) {
-			if (x == 0 || x > 8 || y == 0 || y > 8)
-				MyPuts("   -1");
-			else {
-				sprintf(buf,"%5d", d.galaxy[x][y]);
-				proutn(buf);
-				// If radio works, mark star chart so
-				// it will show current information.
-				// Otherwise mark with current
-				// value which is fixed. 
-				starch[x][y] = damage[DRADIO] > 0 ? d.galaxy[x][y]+1000 :1;
+			for (y = quady-1; y <= quady+1; y++) {
+				if (x == 0 || x > 8 || y == 0 || y > 8)
+					MyPuts("   -1");
+				else {
+					sprintf(buf,"%5d", d.galaxy[x][y]);
+					proutn(buf);
+					// If radio works, mark star chart so
+					// it will show current information.
+					// Otherwise mark with current
+					// value which is fixed. 
+					starch[x][y] = damage[DRADIO] > 0 ? d.galaxy[x][y]+1000 :1;
+				}
 			}
+			MyPutChar('\n');
 		}
-		MyPutChar('\n');
-	}
-	else
-	for (x = quadx-1; x <= quadx+1; x++) {
-		for (y = quady-1; y <= quady+1; y++) {
-			if (x == 0 || x > 8 || y == 0 || y > 8)
-				MyPuts("   -1");
-			else {
-				sprintf(buf,"%5d", d.galaxy[x][y]);
-				proutn(buf);
-				// If radio works, mark star chart so
-				// it will show current information.
-				// Otherwise mark with current
-				// value which is fixed. 
-				starch[x][y] = damage[DRADIO] > 0 ? d.galaxy[x][y]+1000 :1;
-			}
-		}
-		MyPutChar('\n');
 	}
 }
 
@@ -246,7 +249,7 @@ void dreprt(void) {
 }
 
 
-
+/*
 void chart(int nn) {
 
 	int	i;
@@ -263,7 +266,7 @@ void chart(int nn) {
 	if (nn == 0) prout((char*)"STAR CHART FOR THE KNOWN GALAXY");
 	if (stdamtim != 1e30) {
 		if (condit == IHDOCKED) {
-			/* We are docked, so restore chart from base information -- these values won't update! */
+			// We are docked, so restore chart from base information -- these values won't update! 
 			stdamtim = d.date;
 			for (i=1; i <= 8 ; i++)
 				for (j=1; j <= 8; j++)
@@ -328,7 +331,7 @@ void chart(int nn) {
 	}
 }
 		
-/*		
+		
 void srscan(int l) 
 {
 	static char requests[][3] =
@@ -488,6 +491,92 @@ void srscan(int l)
 	if (nn) chart(1);
 }
 */	
+
+void chart(int nn) {
+
+	int	i;
+	int	j;
+	char	buf[128];
+
+	chew();
+	skip(1);
+	if (stdamtim != 1e30 && stdamtim != d.date && condit == IHDOCKED) {
+		prout((char*)"Spock-  \"I revised the Star Chart from the");
+		prout((char*)"  starbase's records.\"");
+		prouts("            ");	// wait for a bit..
+		skip(1);
+	}
+	clearscreen();
+	if (nn == 0) {
+		prout((char*)"           THE KNOWN GALAXY");
+		proutn((char*)"  ");
+		crmshp();
+		proutn((char*)" located in");
+		cramlc(1, quadx, quady);
+	}
+	if (stdamtim != 1e30) {
+		if (condit == IHDOCKED) { // We are docked, so restore chart from base information -- these values won't update! 
+			stdamtim = d.date;
+			for (i=1; i <= 8 ; i++)
+				for (j=1; j <= 8; j++)
+					if (starch[i][j] == 1) starch[i][j] = d.galaxy[i][j]+1000;
+		} else {
+			proutn((char*)"(Last surveillance update ");
+			cramf(d.date-stdamtim, 0, 1);
+			prout((char*)" stardates ago.)");
+		}
+	}
+	if (nn ==0) skip(1);
+
+	prout((char*)"     1 | 2 | 3 | 4 | 5 | 6 | 7 | 8");
+	if (coordfixed) {
+		for (j = 8; j >= 1; j--) {
+			sprintf(buf,"%d", j);
+			proutn(buf);
+			for (i = 1; i <= 8; i++) {
+				if (starch[i][j] < 0) // We know only about the bases
+					MyPuts(" .1.");
+				else if (starch[i][j] == 0) // Unknown
+					MyPuts(" ...");
+				else if (starch[i][j] > 999) { 				// Memorized value
+					sprintf(buf,"%4d", starch[i][j]-1000);
+					proutn(buf);
+				} else {
+					sprintf(buf,"%4d", d.galaxy[i][j]); 				// What is actually there (happens when value is 1)
+					proutn(buf);
+				}
+			}
+			//prout((char*)"  -");
+		}
+	}	else {
+		for (i = 1; i <= 8; i++) {
+			sprintf(buf,"%d :", i);
+			proutn(buf);
+			for (j = 1; j <= 8; j++) {
+				if (starch[i][j] < 0) 											// We know only about the bases
+					MyPuts(" .1.");
+				else if (starch[i][j] == 0)									// Unknown
+					MyPuts(" ...");
+				else if (starch[i][j] > 999) {									// Memorized value
+					sprintf(buf,"%4d", starch[i][j]-1000);
+					proutn(buf);
+				} else {
+					sprintf(buf,"%4d", d.galaxy[i][j]); 							// What is actually there (happens when value is 1)
+					proutn(buf);
+				}
+			}
+			proutn("\n");
+		}
+	}
+	/*
+	if (nn == 0) {
+		crmshp();
+		proutn((char*)" is in");
+		cramlc(1, quadx, quady);
+		skip(1);
+	}
+	*/
+}
 
 
 // Short range scan. But what is this "l" we are passing in? It is used in a giant switch

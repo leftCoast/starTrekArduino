@@ -1,6 +1,6 @@
 #include "sst.h"
 #include <string.h>
-//#include <time.h>
+
 
 void dstrct() {
 	/* Finish with a BANG! */
@@ -63,244 +63,277 @@ void kaboom(void) {
 	finish(FDILITHIUM);
 }
 
-void finish(FINTYPE ifin) 
-{
-  char buf[128]; 
-	int igotit = 0;
-	alldone = 1;
-	skip(3);
-	sprintf(buf,"It is stardate %.1f .\n\n", d.date);
-  MyPuts(buf);
-	switch (ifin) {
-		case FWON: // Game has been won
-			if (d.nromrem != 0)
-        {
-				sprintf(buf,"The remaining %d Romulan ships surrender to Starfleet Command.\n",d.nromrem);
-        MyPuts(buf);
-        }   
-      prout((char*)"You have smashed the Klingon invasion fleet and saved");
-      prout((char*)"the Federation.");
 
-#ifdef CAPTURE
-            if (alive && brigcapacity-brigfree > 0) { // captured Klingon crew will get transfered to starbase
-                kcaptured += brigcapacity-brigfree;
-                sprintf(buf,"The %d captured Klingons are transferred to Star Fleet Command.\n",brigcapacity-brigfree);
-                MyPuts(buf);
-            }
-#endif
-			gamewon=1;
-			if (alive) {
-                double badpt;
 
-				badpt = 5.*d.starkl + casual + 10.*d.nplankl +
-						45.*nhelp+100.*d.basekl;
-				if (ship == IHF) badpt += 100.0;
-				else if (ship == 0) badpt += 200.0;
-				if (badpt < 100.0) badpt = 0.0;	// Close enough!
-				if (d.date-indate < 5.0 ||
-					// killsPerDate >= RateMax
-					(d.killk+d.killc+d.nsckill)/(d.date-indate) >=
-					0.1*skill*(skill+1.0) + 0.1 + 0.008*badpt) {
-					skip(1);
-					prout((char*)"In fact, you have done so well that Starfleet Command");
-					switch (skill) {
-						case SNOVICE:
-							prout((char*)"promotes you one step in rank from \"Novice\" to \"Fair\".");
-							break;
-						case SFAIR:
-							prout((char*)"promotes you one step in rank from \"Fair\" to \"Good\".");
-							break;
-						case SGOOD:
-							prout((char*)"promotes you one step in rank from \"Good\" to \"Expert\".");
-							break;
-						case SEXPERT:
-							prout((char*)"promotes you to Commodore Emeritus.");
-							skip(1);
-							prout((char*)"Now that you think you're really good, try playing");
-							prout((char*)"the \"Emeritus\" game. It will splatter your ego.");
-							break;
-						case SEMERITUS:
-							skip(1);
-							prout((char*)"Computer-  ERROR-ERROR-ERROR-ERROR");
-							skip(1);
-							prout((char*)"  YOUR-SKILL-HAS-EXCEEDED-THE-CAPACITY-OF-THIS-PROGRAM");
-							prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
-							prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
-							prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
-							prout((char*)"  THIS-PROGRAM-MUST?- MUST ? - SUR? ? -?  VI");
-							skip(1);
-							prout((char*)"Now you can retire and write your own Star Trek game!");
-							skip(1);
-							break;
-					}
-					if (skill > SGOOD) {
-						if (thawed
+// *****************************************************
+// Message blocks
+// *****************************************************
+
+
+
+// Promotion thing
+int doPromotion(void) {
+
+	switch (skill) {
+		case SNOVICE:
+			prout((char*)"promotes you one step in rank from \"Novice\" to \"Fair\".");
+		break;
+		case SFAIR:
+			prout((char*)"promotes you one step in rank from \"Fair\" to \"Good\".");
+		break;
+		case SGOOD:
+			prout((char*)"promotes you one step in rank from \"Good\" to \"Expert\".");
+		break;
+		case SEXPERT:
+			prout((char*)"promotes you to Commodore Emeritus.");
+			skip(1);
+			prout((char*)"Now that you think you're really good, try playing");
+			prout((char*)"the \"Emeritus\" game. It will splatter your ego.");
+		break;
+		case SEMERITUS:
+			skip(1);
+			prout((char*)"Computer-  ERROR-ERROR-ERROR-ERROR");
+			skip(1);
+			prout((char*)"  YOUR-SKILL-HAS-EXCEEDED-THE-CAPACITY-OF-THIS-PROGRAM");
+			prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
+			prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
+			prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
+			prout((char*)"  THIS-PROGRAM-MUST?- MUST ? - SUR? ? -?  VI");
+			skip(1);
+			prout((char*)"Now you can retire and write your own Star Trek game!");
+			skip(1);
+		break;
+	}
+	if (skill > SGOOD) {
+		if (thawed
 #ifdef DEBUG
-							&& !idebug
+		&& !idebug
 #endif
-							)
-							prout((char*)"You cannot get a citation, so...");
-						else {
-							prout((char*)"Do you want your Commodore Emeritus Citation printed?");
-							proutn((char*)"(You need a 132 column printer.)");
-							chew();
-							if (ja()) {
-								igotit = 1;
-							}
-						}
-					}
-				}
-				// Only grant long life if alive (original didn't!)
-				skip(1);
-				prout((char*)"LIVE LONG AND PROSPER.");
+			) {
+			prout((char*)"You cannot get a citation, so...");
+		} else {
+			prout((char*)"Do you want your Commodore Emeritus Citation printed?");
+			proutn((char*)"(You need a 132 column printer.)");
+			chew();
+			if (ja()) {
+				return 1;
 			}
-			score(0);
-			if (igotit != 0) plaque();
-			return;
-		case FDEPLETE: // Federation Resources Depleted
-			prout((char*)"Your time has run out and the Federation has been");
-			prout((char*)"conquered.  Your starship is now Klingon property,");
-			prout((char*)"and you are put on trial as a war criminal.  On the");
-			proutn((char*)"basis of your record, you are ");
-			if (d.remkl*3.0 > inkling) {
-				prout((char*)"aquitted.");
-				skip(1);
-				prout((char*)"LIVE LONG AND PROSPER.");
-			}
-			else {
-				prout((char*)"found guilty and");
-				prout((char*)"sentenced to death by slow torture.");
-				alive = 0;
-			}
-			score(0);
-			return;
-		case FLIFESUP:
-			prout((char*)"Your life support reserves have run out, and");
-			prout((char*)"you die of thirst, starvation, and asphyxiation.");
-			prout((char*)"Your starship is a derelict in space.");
-			break;
-		case FNRG:
-			prout((char*)"Your energy supply is exhausted.");
-			skip(1);
-			prout((char*)"Your starship is a derelict in space.");
-			break;
-		case FBATTLE:
-			proutn((char*)"The ");
-			crmshp();
-			prout((char*)" has been destroyed in battle.");
-			skip(1);
-			prout((char*)"Dulce et decorum est pro patria mori.");
-			break;
-		case FNEG3:
-			prout((char*)"You have made three attempts to cross the negative energy");
-			prout((char*)"barrier which surrounds the galaxy.");
-			skip(1);
-			prout((char*)"Your navigation is abominable.");
-			score(0);
-			return;
-		case FNOVA:
-			prout((char*)"Your starship has been destroyed by a nova.");
-			prout((char*)"That was a great shot.");
-			skip(1);
-			break;
-		case FSNOVAED:
-			proutn((char*)"The ");
-			crmshp();
-			prout((char*)" has been fried by a supernova.");
-			prout((char*)"...Not even cinders remain...");
-			break;
-		case FABANDN:
-			prout((char*)"You have been captured by the Klingons. If you still");
-			prout((char*)"had a starbase to be returned to, you would have been");
-			prout((char*)"repatriated and given another chance. Since you have");
-			prout((char*)"no starbases, you will be mercilessly tortured to death.");
-			break;
-		case FDILITHIUM:
-			prout((char*)"Your starship is now an expanding cloud of subatomic particles");
-			break;
-		case FMATERIALIZE:
-			prout((char*)"Starbase was unable to re-materialize your starship.");
-			prout((char*)"Sic transit gloria muntdi");
-			break;
-		case FPHASER:
-			proutn((char*)"The ");
-			crmshp();
-			prout((char*)" has been cremated by its own phasers.");
-			break;
-		case FLOST:
-			prout((char*)"You and your landing party have been");
-			prout((char*)"converted to energy, dissipating through space.");
-			break;
-		case FMINING:
-			prout((char*)"You are left with your landing party on");
-			prout((char*)"a wild jungle planet inhabited by primitive cannibals.");
-			skip(1);
-			prout((char*)"They are very fond of \"Captain Kirk\" soup.");
-			skip(1);
-			proutn((char*)"Without your leadership, the ");
-			crmshp();
-			prout((char*)" is destroyed.");
-			break;
-		case FDPLANET:
-			prout((char*)"You and your mining party perish.");
-			skip(1);
-			prout((char*)"That was a great shot.");
-			skip(1);
-			break;
-		case FSSC:
-			prout((char*)"The Galileo is instantly annihilated by the supernova.");
-			// no break;
-		case FPNOVA:
-			prout((char*)"You and your mining party are atomized.");
-			skip(1);
-			proutn((char*)"Mr. Spock takes command of the ");
-			crmshp();
-			prout((char*)" and");
-			prout((char*)"joins the Romulans, reigning terror on the Federation.");
-			break;
-		case FSTRACTOR:
-			prout((char*)"The shuttle craft Galileo is also caught,");
-			prout((char*)"and breaks up under the strain.");
-			skip(1);
-			prout((char*)"Your debris is scattered for millions of miles.");
-			proutn((char*)"Without your leadership, the ");
-			crmshp();
-			prout((char*)" is destroyed.");
-			break;
-		case FDRAY:
-			prout((char*)"The mutants attack and kill Spock.");
-			prout((char*)"Your ship is captured by Klingons, and");
-			prout((char*)"your crew is put on display in a Klingon zoo.");
-			break;
-		case FTRIBBLE:
-			prout((char*)"Tribbles consume all remaining water,");
-			prout((char*)"food, and oxygen on your ship.");
-			skip(1);
-			prout((char*)"You die of thirst, starvation, and asphyxiation.");
-			prout((char*)"Your starship is a derelict in space.");
-			break;
-		case FHOLE:
-			prout((char*)"Your ship is drawn to the center of the black hole.");
-			prout((char*)"You are crushed into extremely dense matter.");
-			break;
-#ifdef CLOAKING
-		case FCLOAK:
-			ncviol++;
-			prout(char*)("You have violated the Treaty of Algeron.");
-			prout((char*)"The Romulan Empire can never trust you again.");
-			break;
-#endif
+		}
 	}
-#ifdef CLOAKING
-	if (ifin!=FWON && ifin!=FCLOAK && iscloaked!=0) {
-		prout((char*)"Your ship was cloaked so your subspace radio did not receive anything.");
-		prout((char*)"You may have missed some warning messages.");
+	return 0;
+}
+
+
+// Federation Resources Depleted
+void resourceDepleted(void) {
+			
+	prout((char*)"Your time has run out and the Federation has been");
+	prout((char*)"conquered.  Your starship is now Klingon property,");
+	prout((char*)"and you are put on trial as a war criminal.  On the");
+	proutn((char*)"basis of your record, you are ");
+	if (d.remkl*3.0 > inkling) {
+		prout((char*)"aquitted.");
 		skip(1);
+		prout((char*)"LIVE LONG AND PROSPER.");
 	}
+	else {
+		prout((char*)"found guilty and");
+		prout((char*)"sentenced to death by slow torture.");
+		alive = 0;
+	}
+	score(0);
+}
+
+
+// Life support has run out, you died.
+void noLifeSupport(void) {
+
+	prout((char*)"Your life support reserves have run out, and");
+	prout((char*)"you die of thirst, starvation, and asphyxiation.");
+	prout((char*)"Your starship is a derelict in space.");
+}
+
+
+//energy has run out, you died.
+void noEnergy(void) {
+
+	prout((char*)"Your energy supply is exhausted.");
+	skip(1);
+	prout((char*)"Your starship is a derelict in space.");
+}
+
+
+// As the name says, you died in battle.
+void battleDeath(void) {
+
+	proutn((char*)"The ");
+	crmshp();
+	prout((char*)" has been destroyed in battle.");
+	skip(1);
+	prout((char*)"Dulce et decorum est pro patria mori.");
+}
+
+
+// Repeated off map death.
+void boundryDeath(void) {
+
+	prout((char*)"You have made three attempts to cross the negative energy");
+	prout((char*)"barrier which surrounds the galaxy.");
+	skip(1);
+	prout((char*)"Your navigation is abominable.");
+	score(0);
+}			
+			
+
+// You blew up a star, dummy!
+void novaDeath(void) {
+
+	prout((char*)"Your starship has been destroyed by a nova.");
+	prout((char*)"That was a great shot.");
+	skip(1);
+}
+
+
+// You were fried by a supernova.			
+void superNovaDeath(void) {
+
+	proutn((char*)"The ");
+	crmshp();
+	prout((char*)" has been fried by a supernova.");
+	prout((char*)"...Not even cinders remain...");
+}
+
+
+// Captured death. So many ways to di huh?
+void capturedDeath(void) {
+
+	prout((char*)"You have been captured by the Klingons. If you still");
+	prout((char*)"had a starbase to be returned to, you would have been");
+	prout((char*)"repatriated and given another chance. Since you have");
+	prout((char*)"no starbases, you will be mercilessly tortured to death.");
+}	
+
+
+// Not sure what this one is..
+void vaporizeDeath(void) { prout((char*)"Your starship is now an expanding cloud of subatomic particles"); }
+
+
+	
+void rematerializeError(void) {
+
+	prout((char*)"Starbase was unable to re-materialize your starship.");
+	prout((char*)"Sic transit gloria muntdi");
+}	
+
+
+// I guess you shot yourself.
+void phaserDeath(void) {
+
+	proutn((char*)"The ");
+	crmshp();
+	prout((char*)" has been cremated by its own phasers.");
+}
+
+void vaporPartyDeath(void) {
+
+	prout((char*)"You and your landing party have been");
+	prout((char*)"converted to energy, dissipating through space.");
+}
+
+
+void	standedDeath(void) {
+
+	prout((char*)"You are left with your landing party on");
+	prout((char*)"a wild jungle planet inhabited by primitive cannibals.");
+	skip(1);
+	prout((char*)"They are very fond of \"Captain Kirk\" soup.");
+	skip(1);
+	proutn((char*)"Without your leadership, the ");
+	crmshp();
+	prout((char*)" is destroyed.");
+}			
+	
+
+void blowUpPlanetDeath(void) {
+	
+	prout((char*)"You and your mining party perish.");
+	skip(1);
+	prout((char*)"That was a great shot.");
+	skip(1);
+}
+
+
+void shuttleCookedDeath(void) {
+
+	prout((char*)"You and your mining party are atomized.");
+	skip(1);
+	proutn((char*)"Mr. Spock takes command of the ");
+	crmshp();
+	prout((char*)" and");
+	prout((char*)"joins the Romulans, reigning terror on the Federation.");
+}	
+
+
+void shuttleBreakupDeath(void) {
+
+	prout((char*)"The shuttle craft Galileo is also caught,");
+	prout((char*)"and breaks up under the strain.");
+	skip(1);
+	prout((char*)"Your debris is scattered for millions of miles.");
+	proutn((char*)"Without your leadership, the ");
+	crmshp();
+	prout((char*)" is destroyed.");
+}	
+
+
+void mutantDeath(void) {
+
+	prout((char*)"The mutants attack and kill Spock.");
+	prout((char*)"Your ship is captured by Klingons, and");
+	prout((char*)"your crew is put on display in a Klingon zoo.");
+}	
+
+
+void tribbleDeath(void) {
+
+	prout((char*)"Tribbles consume all remaining water,");
+	prout((char*)"food, and oxygen on your ship.");
+	skip(1);
+	prout((char*)"You die of thirst, starvation, and asphyxiation.");
+	prout((char*)"Your starship is a derelict in space.");
+}
+
+
+void blackHoleDeath(void) {
+
+	prout((char*)"Your ship is drawn to the center of the black hole.");
+	prout((char*)"You are crushed into extremely dense matter.");
+}
+
+#ifdef CLOAKING
+void caughtCloaked(void) {
+
+	prout((char*)"You have violated the Treaty of Algeron.");
+	prout((char*)"The Romulan Empire can never trust you again.");
+}
+
+
+void uncloakWarning(void) {
+
+	prout((char*)"Your ship was cloaked so your subspace radio did not receive anything.");
+	prout((char*)"You may have missed some warning messages.");
+	skip(1);
+}
 #endif
 
-	if (ship==IHF) ship= 0;
-	else if (ship == IHE) ship = IHF;
+
+void fuzzyEnding(void) {
+
+	if (ship==IHF) {
+		ship= 0;
+	} else if (ship == IHE) {
+		ship = IHF;
+	}
 	alive = 0;
 	if (d.remkl != 0) {
 		double goodies = d.remres/inresor;
@@ -318,35 +351,148 @@ void finish(FINTYPE ifin)
 		}
 		else
 			prout((char*)"The Federation will be destroyed.");
-	}
-	else {
+	} else {
 		prout((char*)"Since you took the last Klingon with you, you are a");
 		prout((char*)"martyr and a hero. Someday maybe they'll erect a");
 		prout((char*)"statue in your memory. Rest in peace, and try not");
 		prout((char*)"to think about pigeons.");
 		gamewon = 1;
 	}
+}
+
+
+
+// *****************************************************
+// End message blocks.
+// *****************************************************
+
+
+
+void finish(FINTYPE ifin) {
+  
+	char buf[128]; 
+	int igotit;
+	double badpt;
+	
+	alldone = 1;
+	skip(3);
+	sprintf(buf,"It is stardate %.1f .\n\n", d.date);
+	MyPuts(buf);
+	switch (ifin) {
+		case FWON: // Game has been won
+			if (d.nromrem != 0) {
+				sprintf(buf,"The remaining %d Romulan ships surrender to Starfleet Command.\n",d.nromrem);
+        		MyPuts(buf);
+			}   
+			prout((char*)"You have smashed the Klingon invasion fleet and saved");
+			prout((char*)"the Federation.");
+
+#ifdef CAPTURE
+			if (alive && brigcapacity-brigfree > 0) { // captured Klingon crew will get transfered to starbase
+				kcaptured += brigcapacity-brigfree;
+				sprintf(buf,"The %d captured Klingons are transferred to Star Fleet Command.\n",brigcapacity-brigfree);
+				MyPuts(buf);
+			}
+#endif
+			gamewon=1;
+			if (alive) {
+				badpt = 5.*d.starkl + casual + 10.*d.nplankl + 45.*nhelp+100.*d.basekl;
+				if (ship == IHF) {
+					badpt += 100.0;
+				} else if (ship == 0) {
+					 badpt += 200.0;
+				}
+				if (badpt < 100.0) {
+					badpt = 0.0;	// Close enough!
+				}
+				if (d.date-indate < 5.0 
+					|| (d.killk+d.killc+d.nsckill)/(d.date-indate)
+					>= 0.1*skill*(skill+1.0) + 0.1 + 0.008*badpt) {
+					skip(1);
+					prout((char*)"In fact, you have done so well that Starfleet Command");
+					igotit = doPromotion();
+				}
+				skip(1);
+				prout((char*)"LIVE LONG AND PROSPER."); // Only grant long life if alive. (original didn't!)
+			}
+			score(0);
+			if (igotit != 0) {
+				plaque();
+			}
+		return;
+		
+		// from here on down its not a total victory, death, destruction. Battle to a draw..
+		case FDEPLETE:			resourceDepleted();		return;
+		case FLIFESUP:			noLifeSupport();			break;
+		case FNRG:				noEnergy();					break;
+		case FBATTLE:			battleDeath();				break;
+		case FNEG3:				boundryDeath();			return;
+		case FNOVA:				novaDeath();				break;
+		case FSNOVAED:			superNovaDeath();			break;
+		case FABANDN:			capturedDeath();			break;
+		case FDILITHIUM: 		vaporizeDeath();			break;
+		case FMATERIALIZE:	rematerializeError();	break;
+		case FPHASER:			phaserDeath();				break;
+		case FLOST:				vaporPartyDeath();		break;
+		case FMINING:			standedDeath();			break;
+		case FDPLANET:			blowUpPlanetDeath();		break;
+		case FSSC: prout((char*)"The Galileo is instantly annihilated by the supernova."); // no break;
+		case FPNOVA:			shuttleCookedDeath();	break;
+		case FSTRACTOR:		shuttleBreakupDeath();	break;
+		case FDRAY:				mutantDeath();				break;
+		case FTRIBBLE:			tribbleDeath();			break;
+		case FHOLE:				blackHoleDeath();			break;
+#ifdef CLOAKING
+		case FCLOAK:			
+			ncviol++;
+			caughtCloaked();
+		break;
+#endif
+	}
+#ifdef CLOAKING
+	if (ifin!=FWON && ifin!=FCLOAK && iscloaked!=0) {
+		uncloakWarning();
+	}
+#endif
+	fuzzyEnding();	// Some sort of "sue for peace" thing.
 	score(0);
 }
 
-void score(int inGame) 
-{
-	double timused = d.date - indate;
-    int ithperd, iwon, klship;
-    int dnromrem = d.nromrem; // Leave global value alone
-
-    if (!inGame) pause(0);
-
+void score(int inGame) {
+	
+	double	timused;
+	int		ithperd; 
+	int		iwon;
+	int		klship;
+	int		dnromrem;
+	char 		buf[128];
+	
+	timused = d.date - indate;
+	dnromrem = d.nromrem; 			// Leave global value alone
+	
+	if (!inGame) {
+		pause(0);
+	}
 	iskill = skill;
-	if ((timused == 0 || d.remkl != 0) && timused < 5.0) timused = 5.0;
+	if ((timused == 0 || d.remkl != 0) && timused < 5.0) { 
+		timused = 5.0;
+	}
 	perdate = (d.killc + d.killk + d.nsckill)/timused;
 	ithperd = 500*perdate + 0.5;
 	iwon = 0;
-	if (gamewon) iwon = 100*skill;
-	if (ship == IHE) klship = 0;
-	else if (ship == IHF) klship = 1;
-	else klship = 2;
-	if (gamewon == 0 || inGame) dnromrem = 0; // None captured if no win or if still in the game
+	if (gamewon) {
+		iwon = 100*skill;
+	}
+	if (ship == IHE) {
+		klship = 0;
+	} else if (ship == IHF) {
+		klship = 1;
+	} else {
+		klship = 2;
+	}
+	if (gamewon == 0 || inGame) {	// None captured if no win or if still in the game
+		dnromrem = 0; 
+	}
 	iscore = 10*d.killk + 50*d.killc + ithperd + iwon
 			 - 100*d.basekl - 100*klship - 45*nhelp -5*d.starkl - casual
 		 + 20*d.nromkl + 200*d.nsckill - 10*d.nplankl + dnromrem;
@@ -358,53 +504,71 @@ void score(int inGame)
 #endif
 	if (alive == 0) iscore -= 200;
 	skip(2);
-    if (inGame) prout((char*)"Your score so far --");
-    else prout((char*)"Your score --");
-	if (d.nromkl)
-		printf(d.nromkl> 1 ? "%6d Romulan ships destroyed            %5d\n" : "%6d Romulan ship destroyed             %5d\n",
-			   d.nromkl, 20*d.nromkl);
-	if (dnromrem)
-		printf(dnromrem > 1 ? "%6d Romulan ships surrendered         %5d\n" : "%6d Romulan ship surrendered           %5d\n",
-			   dnromrem, dnromrem);
-	if (d.killk)
-		printf(d.killk > 1 ? "%6d ordinary Klingon ships destroyed   %5d\n" : "%6d ordinary Klingon ship destroyed    %5d\n",
-			   d.killk,  10*d.killk);
-	if (d.killc)
-		printf(d.killc > 1 ? "%6d Klingon Commander ships destroyed  %5d\n" : "%6d Klingon Commander ship destroyed   %5d\n",
-			   d.killc, 50*d.killc);
-	if (d.nsckill)
-		printf("%6d Super-Commander ship destroyed     %5d\n",
-			   d.nsckill, 200*d.nsckill);
-	if (ithperd)
-		printf("%6.2f Klingon ships per stardate         %5d\n",
-			   perdate, ithperd);
+	if (inGame) {
+		prout((char*)"Your score so far --");
+	} else {
+		prout((char*)"Your score --");
+	}
+	
+	if (d.nromkl) {
+		sprintf(buf,d.nromkl> 1 ? "%6d Romulan ships destroyed            %5d\n" : "%6d Romulan ship destroyed             %5d\n",d.nromkl, 20*d.nromkl);
+		MyPuts(buf);
+	}
+	if (dnromrem) {
+		sprintf(buf,dnromrem > 1 ? "%6d Romulan ships surrendered         %5d\n" : "%6d Romulan ship surrendered           %5d\n",dnromrem, dnromrem);
+		MyPuts(buf);
+	}
+	if (d.killk) {
+		sprintf(buf,d.killk > 1 ? "%6d ordinary Klingon ships destroyed   %5d\n" : "%6d ordinary Klingon ship destroyed    %5d\n",d.killk,  10*d.killk);
+		MyPuts(buf);
+	}
+	if (d.killc) {
+		sprintf(buf,d.killc > 1 ? "%6d Klingon Commander ships destroyed  %5d\n" : "%6d Klingon Commander ship destroyed   %5d\n",d.killc, 50*d.killc);
+		MyPuts(buf);
+	}
+	if (d.nsckill) {
+		sprintf(buf,"%6d Super-Commander ship destroyed     %5d\n",d.nsckill, 200*d.nsckill);
+		MyPuts(buf);
+	}
+	if (ithperd) {
+		sprintf(buf,"%6.2f Klingon ships per stardate         %5d\n",perdate, ithperd);
+		MyPuts(buf);
+	}
 #ifdef CAPTURE
-	if (kcaptured)
-		printf(kcaptured > 1 ? "%6d Klingons captured                  %5d\n" : "%6d Klingon captured                   %5d\n",
-		        kcaptured, 3*kcaptured);
+	if (kcaptured) {
+		sprintf(buf,kcaptured > 1 ? "%6d Klingons captured                  %5d\n" : "%6d Klingon captured                   %5d\n",kcaptured, 3*kcaptured);
+		MyPuts(buf);
+	}
 #endif
-	if (d.starkl)
-		printf(d.starkl > 1 ? "%6d stars destroyed by your action     %5d\n" : "%6d star destroyed by your action      %5d\n",
-			   d.starkl, -5*d.starkl);
-	if (d.nplankl)
-		printf(d.nplankl > 1 ? "%6d planets destroyed by your action   %5d\n" : "%6d planet destroyed by your action    %5d\n",
-			   d.nplankl, -10*d.nplankl);
-	if (d.basekl)
-		printf(d.basekl > 1 ? "%6d bases destroyed by your action     %5d\n" : "%6d base destroyed by your action      %5d\n",
-			   d.basekl, -100*d.basekl);
-	if (nhelp)
-		printf(nhelp > 1 ? "%6d calls for help from starbase       %5d\n" : "%6d call for help from starbase        %5d\n",
-			   nhelp, -45*nhelp);
-	if (casual)
-		printf(casual > 1 ? "%6d casualties incurred                %5d\n" : "%6d casualty incurred                  %5d\n",
-			   casual, -casual);
-	if (klship)
-		printf(klship > 1 ? "%6d ships lost or destroyed            %5d\n" : "%6d ship lost or destroyed             %5d\n",
-			   klship, -100*klship);
+	if (d.starkl) {
+		sprintf(buf,d.starkl > 1 ? "%6d stars destroyed by your action     %5d\n" : "%6d star destroyed by your action      %5d\n",d.starkl, -5*d.starkl);
+		MyPuts(buf);
+	}
+	if (d.nplankl) {
+		sprintf(buf,d.nplankl > 1 ? "%6d planets destroyed by your action   %5d\n" : "%6d planet destroyed by your action    %5d\n",d.nplankl, -10*d.nplankl);
+		MyPuts(buf);
+	}
+	if (d.basekl) {
+		sprintf(buf,d.basekl > 1 ? "%6d bases destroyed by your action     %5d\n" : "%6d base destroyed by your action      %5d\n",d.basekl, -100*d.basekl);
+		MyPuts(buf);
+	}
+	if (nhelp) {
+		sprintf(buf,nhelp > 1 ? "%6d calls for help from starbase       %5d\n" : "%6d call for help from starbase        %5d\n",nhelp, -45*nhelp);
+		MyPuts(buf);
+	}
+	if (casual) {
+		sprintf(buf,casual > 1 ? "%6d casualties incurred                %5d\n" : "%6d casualty incurred                  %5d\n",casual, -casual);
+		MyPuts(buf);
+	}
+	if (klship) {
+		sprintf(buf,klship > 1 ? "%6d ships lost or destroyed            %5d\n" : "%6d ship lost or destroyed             %5d\n",klship, -100*klship);
+		MyPuts(buf);
+	}
 #ifdef CLOAKING
-	if (ncviol>0)
-		printf(ncviol > 1 ? "%6d Treaty of Algeron violations       %5d\n" : "%6d Treaty of Algeron violation        %5d\n",
-		       ncviol, -100*ncviol);
+	if (ncviol>0) {
+		sprintf(buf,ncviol > 1 ? "%6d Treaty of Algeron violations       %5d\n" : "%6d Treaty of Algeron violation        %5d\n",ncviol, -100*ncviol);
+		MyPuts(buf);
+	}
 #endif
 	if (alive==0)
 		prout((char*)"Penalty for getting yourself killed        -200");
@@ -418,12 +582,14 @@ void score(int inGame)
 			case SEXPERT: proutn((char*)"Expert game  "); break;
 			case SEMERITUS: proutn((char*)"Emeritus game"); break;
 		}
-		printf("           %5d\n", iwon);
+		sprintf(buf,"           %5d\n", iwon);
+		MyPuts(buf);
 	}
 	skip(2);
-    printf("TOTAL SCORE                               %5d\n", iscore);
-    if (inGame && skill < SGOOD) 
-      MyPuts("REMEMBER--The score doesn't really matter until the mission is accomplished!\n");
+	sprintf(buf,"TOTAL SCORE                               %5d\n", iscore);
+	MyPuts(buf);
+	if (inGame && skill < SGOOD) 
+		MyPuts("REMEMBER--The score doesn't really matter until the mission is accomplished!\n");
 }
 
 void plaque(void) 

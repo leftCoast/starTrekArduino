@@ -455,6 +455,11 @@ void attakreport(void);
 void movetho(void);
 void probe(void);
 
+// Arduino calls
+//void close(void);
+//void out(char* str);
+//void outln(char* str);
+
 #ifndef WINDOWS
 int min(int, int);
 int max(int, int);

@@ -303,6 +303,8 @@ static void makemoves(void) {
         freeze(TRUE); // forced save
         //exit(1); // And quick exit
         prout((char*)"Tried to Exit - can't");
+        //close();	// even close doesn't work. Odd.
+        alldone = 1; // quit the game.
         break;
       case 25:
         probe(); // Launch probe
@@ -494,10 +496,11 @@ void crmshp(void)
   proutn(s);
 }
 
-void stars(void) 
-{
-  prouts((char*)"**************************************");
-  skip(1);
+void stars(void) {
+	
+	proutn((char*)"          ");
+  	prouts((char*)"* * * * * * * * *");
+  	skip(1);
 }
 
 double expran(double avrage) 
@@ -590,8 +593,8 @@ int scan(void) {
   return IHALPHA;
 }
 
-int ja(void) 
-{
+int ja(void) {
+  
   chew();
   while (TRUE) {
     scan();
@@ -620,7 +623,8 @@ double square(double i) {
 
 static void clearscreen(void) {
   /* Somehow we need to clear the screen */
-  proutn((char*)"\033[2J\033[0;0H");	/* Hope for an ANSI display */
+  proutn((char*)"\n\n\n\n\n\n\n\n\n\n\n\n");	/* Hope for an ANSI display */ // It ain't. So we do the linefeed thing.
+  
 }
 
 /* We will pull these out in case we want to do something special later */
@@ -649,6 +653,7 @@ void pause(int i) {
     clearscreen();
   }
   linecount = 0;
+  Serial.println("exiting pause()");Serial.flush();
 }
 
 void skip(int i) {

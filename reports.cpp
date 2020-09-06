@@ -26,7 +26,11 @@ void attakreport(void)
 	
 
 void report(int f) {
-	char *s1,*s2,*s3;
+
+	char*	s1;
+	char*	s2;
+	char*	s3;
+	char	buf[128];
 
 	chew();
         if(thawed)
@@ -47,21 +51,36 @@ void report(int f) {
 		case SEMERITUS: s3=(char*)"emeritus"; break;
 		default: s3=(char*)"skilled"; break;
 	}
-	Serial.printf("\nYou %s playing a %s%s %s game.\n",alldone? "were": "are now", s1, s2, s3);
+	sprintf(buf,"\nYou %s playing a %s%s %s game.\n",alldone? "were": "are now", s1, s2, s3);
+	proutn(buf);
 	if (skill>SGOOD && thawed && !alldone) prout((char*)"No plaque is allowed.");
-	if (tourn) Serial.printf("This is tournament game %d.\n", tourn);
-	if (f) Serial.printf("Your secret password is \"%s\"\n",passwd);
-	Serial.printf("%d of %d Klingon ships have been destroyed",
-		   d.killk+d.killc+d.nsckill, inkling);
-	if (d.killc) Serial.printf(", including %d Commander%s.\n", d.killc, d.killc==1?"":"s");
-	else if (d.killk+d.nsckill > 0) prout((char*)", but no Commanders.");
-	else prout((char*)".");
-	if (skill > SFAIR) Serial.printf("The Super Commander has %sbeen destroyed.\n",
-						  d.nscrem?"not ":"");
+	if (tourn) {
+		sprintf(buf,"This is tournament game %d.\n", tourn);
+		proutn(buf);
+	}
+	if (f) {
+		sprintf(buf,"Your secret password is \"%s\"\n",passwd);
+		proutn(buf);
+	}
+	sprintf(buf,"%d of %d Klingon ships have been destroyed",d.killk+d.killc+d.nsckill, inkling);
+	proutn(buf);
+	if (d.killc) {
+		sprintf(buf,", including %d Commander%s.\n", d.killc, d.killc==1?"":"s");
+		proutn(buf);
+	} else if (d.killk+d.nsckill > 0) {
+		prout((char*)", but no Commanders.");
+	} else {
+		prout((char*)".");
+	}
+	if (skill > SFAIR) {
+		sprintf(buf,"The Super Commander has %sbeen destroyed.\n",d.nscrem?"not ":"");
+		proutn(buf);
+	}
 	if (d.rembase != inbase) {
 		proutn((char*)"There ");
-		if (inbase-d.rembase==1) proutn((char*)"has been 1 base");
-		else {
+		if (inbase-d.rembase==1) {
+			proutn((char*)"has been 1 base");
+		} else {
 			proutn((char*)"have been ");
 			crami(inbase-d.rembase, 1);
 			proutn((char*)" bases");
@@ -69,30 +88,45 @@ void report(int f) {
 		proutn((char*)" destroyed, ");
 		crami(d.rembase, 1);
 		prout((char*)" remaining.");
+	} else {
+		sprintf(buf,"There are %d bases.\n", inbase);
+		proutn(buf);
 	}
-	else Serial.printf("There are %d bases.\n", inbase);
 	if (REPORTS || iseenit) {
 		/* Don't report this if not seen and
 			either the radio is dead or not at base! */
 		attakreport();
 		iseenit = 1;
 	}
-	if (casual) Serial.printf("%d casualt%s suffered so far.\n",
-					   casual, casual==1? "y" : "ies");
+	if (casual) {
+		sprintf(buf,"%d casualt%s suffered so far.\n",casual, casual==1? "y" : "ies");
+		proutn(buf);
+	}
 #ifdef CAPTURE
-    if (brigcapacity != brigfree) Serial.printf("%d Klingon%s in brig.\n",
-    							brigcapacity-brigfree, brigcapacity-brigfree>1 ? "s" : "");
-    if (kcaptured > 0) Serial.printf("%d captured Klingon%s turned in to Star Fleet.\n", 
-                               kcaptured, kcaptured>1 ? "s" : "");
+	if (brigcapacity != brigfree) {
+		sprintf(buf,"%d Klingon%s in brig.\n",brigcapacity-brigfree, brigcapacity-brigfree>1 ? "s" : "");
+    	proutn(buf);
+	}
+	if (kcaptured > 0) {
+		sprintf(buf,"%d captured Klingon%s turned in to Star Fleet.\n",kcaptured, kcaptured>1 ? "s" : "");
+		proutn(buf);
+	}
 #endif
-	if (nhelp) Serial.printf("There %s %d call%s for help.\n",
-					 nhelp==1 ? "was" : "were", nhelp, nhelp==1 ? "" : "s");
+	if (nhelp) {
+		sprintf(buf,"There %s %d call%s for help.\n",nhelp==1 ? "was" : "were", nhelp, nhelp==1 ? "" : "s");
+		proutn(buf);
+	}
 	if (ship == IHE) {
 		proutn((char*)(char*)"You have ");
-		if (nprobes) crami(nprobes,1);
-		else proutn((char*)"no");
+		if (nprobes) {
+			crami(nprobes,1);
+		} else {
+			proutn((char*)"no");
+		}
 		proutn((char*)" deep space probe");
-		if (nprobes!=1) proutn((char*)"s");
+		if (nprobes!=1) {
+			proutn((char*)"s");
+		}
 		prout((char*)".");
 	}
 	if (REPORTS && future[FDSPROB] != 1e30) {
@@ -113,16 +147,19 @@ void report(int f) {
 				ai *= 2.0;
 				i++;
 			}
-			Serial.printf("Dilithium crystals have been used %d time%s.\n",
-				   i, i==1? "" : "s");
+			sprintf(buf,"Dilithium crystals have been used %d time%s.\n",i, i==1? "" : "s");
+			proutn(buf);
 		}
 	}
 	skip(1);
 }
 	
-void lrscan(void) 
-{
-	int x, y;
+void lrscan(void) {
+	
+	int	x;
+	int	y;
+	char	buf[128];
+	
 	chew();
 	if (damage[DLRSENS] != 0.0) {
 		/* Now allow base's sensors if docked */
@@ -145,7 +182,8 @@ void lrscan(void)
 			if (x == 0 || x > 8 || y == 0 || y > 8)
 				MyPuts("   -1");
 			else {
-				printf("%5d", d.galaxy[x][y]);
+				sprintf(buf,"%5d", d.galaxy[x][y]);
+				proutn(buf);
 				// If radio works, mark star chart so
 				// it will show current information.
 				// Otherwise mark with current
@@ -161,7 +199,8 @@ void lrscan(void)
 			if (x == 0 || x > 8 || y == 0 || y > 8)
 				MyPuts("   -1");
 			else {
-				printf("%5d", d.galaxy[x][y]);
+				sprintf(buf,"%5d", d.galaxy[x][y]);
+				proutn(buf);
 				// If radio works, mark star chart so
 				// it will show current information.
 				// Otherwise mark with current
@@ -171,13 +210,17 @@ void lrscan(void)
 		}
 		MyPutChar('\n');
 	}
-
 }
 
-void dreprt(void) {
-	int jdam = FALSE, i;
-	chew();
 
+void dreprt(void) {
+	
+	int	i;
+	int	jdam;
+	char	buf[128];
+	
+	jdam = FALSE;
+	chew();
 	for (i = 1; i <= ndevice; i++) {
 		if (damage[i] > 0.0) {
 			if (!jdam) {
@@ -186,7 +229,8 @@ void dreprt(void) {
 				prout((char*)"                IN FLIGHT   DOCKED");
 				jdam = TRUE;
 			}
-			printf("  %16s ", device[i]);
+			sprintf(buf,"  %16s ", device[i]);
+			proutn(buf);
 			if (i == DDRAY) { // Deathray is special case
 				proutn((char*)"           ");
 				cramf(damage[i]+0.005, 8, 2);
@@ -201,9 +245,13 @@ void dreprt(void) {
 	if (!jdam) prout((char*)"All devices functional.");
 }
 
-void chart(int nn) 
-{
-	int i,j;
+
+
+void chart(int nn) {
+
+	int	i;
+	int	j;
+	char	buf[128];
 
 	chew();
 	skip(1);
@@ -232,35 +280,44 @@ void chart(int nn)
 	prout((char*)"      1    2    3    4    5    6    7    8");
 	prout((char*)"    ----------------------------------------");
 	if (nn==0) prout((char*)"  -");
-	if (coordfixed)
-	for (j = 8; j >= 1; j--) {
-		Serial.printf("%d -", j);
+	if (coordfixed) {
+		for (j = 8; j >= 1; j--) {
+			sprintf(buf,"%d -", j);
+			proutn(buf);
+			for (i = 1; i <= 8; i++) {
+				if (starch[i][j] < 0) // We know only about the bases
+					MyPuts("  .1.");
+				else if (starch[i][j] == 0) // Unknown
+					MyPuts("  ...");
+				else if (starch[i][j] > 999) { 				// Memorized value
+					sprintf(buf,"%5d", starch[i][j]-1000);
+					proutn(buf);
+				} else {
+					sprintf(buf,"%5d", d.galaxy[i][j]); 				// What is actually there (happens when value is 1)
+					proutn(buf);
+				}
+			}
+			prout((char*)"  -");
+		}
+	}	else {
 		for (i = 1; i <= 8; i++) {
-			if (starch[i][j] < 0) // We know only about the bases
-				MyPuts("  .1.");
-			else if (starch[i][j] == 0) // Unknown
-				MyPuts("  ...");
-			else if (starch[i][j] > 999) // Memorized value
-				printf("%5d", starch[i][j]-1000);
-			else
-				printf("%5d", d.galaxy[i][j]); // What is actually there (happens when value is 1)
+			sprintf("%d -", i);
+			proutn(buf);
+			for (j = 1; j <= 8; j++) {
+				if (starch[i][j] < 0) 											// We know only about the bases
+					MyPuts("  .1.");
+				else if (starch[i][j] == 0)									// Unknown
+					MyPuts("  ...");
+				else if (starch[i][j] > 999) {									// Memorized value
+					sprintf(buf,"%5d", starch[i][j]-1000);
+					proutn(buf);
+				} else {
+					sprintf(buf,"%5d", d.galaxy[i][j]); 							// What is actually there (happens when value is 1)
+					proutn(buf);
+				}
+			}
+			prout((char*)"  -");
 		}
-		prout((char*)"  -");
-	}
-	else
-	for (i = 1; i <= 8; i++) {
-		printf("%d -", i);
-		for (j = 1; j <= 8; j++) {
-			if (starch[i][j] < 0) // We know only about the bases
-				MyPuts("  .1.");
-			else if (starch[i][j] == 0) // Unknown
-				MyPuts("  ...");
-			else if (starch[i][j] > 999) // Memorized value
-				printf("%5d", starch[i][j]-1000);
-			else
-				printf("%5d", d.galaxy[i][j]); // What is actually there (happens when value is 1)
-		}
-		prout((char*)"  -");
 	}
 	if (nn == 0) {
 		skip(1);
@@ -457,7 +514,7 @@ void srscan(int l) {
 		case 1: // SRSCAN
 			MyPuts("   Quadrant : ");											   // Lets put out our position as the Title line.
 			cramlc(0, quadx, quady);												// Format and output quadrant.
-			MyPuts("   Sector : ");												// Ouput a comma..
+			MyPuts("   Sector : ");													// Ouput Sector label..
 			cramlc(0, sectx, secty);												// And lets see the sector.
 			
 			if (damage[DSRSENS] != 0) {											// If sensors are damaged..
@@ -480,7 +537,7 @@ void srscan(int l) {
 			if (isit((char*)"no")) rightside = FALSE;
 			chew();
 			prout((char*)"\n    1 2 3 4 5 6 7 8 9 10");
-			break;
+		break;
 		case 2: // REQUEST
 			while (scan() == IHEOL)
 				MyPuts("Information desired? ");
@@ -494,7 +551,7 @@ void srscan(int l) {
 					 "  energy, torpedoes, shields, klingons, time.");
 				return;
 			}
-			// no "break"
+		// no "break"
 		case 3: // STATUS
 			chew();
 			leftside = FALSE;
@@ -505,38 +562,34 @@ void srscan(int l) {
 		if (leftside) {
 			if (coordfixed) {
 				sprintf(buf,"%2d  ", 11-i);
-        MyPuts(buf);
+        		MyPuts(buf);
 				for (j = 1; j <= 10; j++) {
-					if (goodScan || (abs((11-i)-secty)<= 1 && abs(j-sectx) <= 1))
-            {
+					if (goodScan || (abs((11-i)-secty)<= 1 && abs(j-sectx) <= 1)) {
 						sprintf(buf,"%c ",quad[j][11-i]);
-            MyPuts(buf);
-            }
-					else
+						MyPuts(buf);
+            	} else {
 						MyPuts("- ");
+					}
 				}
 			} else {
 				sprintf(buf,"%2d  ", i);
-        MyPuts(buf);
-        
+        		MyPuts(buf);
 				for (j = 1; j <= 10; j++) {
-					if (goodScan || (abs(i-sectx)<= 1 && abs(j-secty) <= 1))
-            {
+					if (goodScan || (abs(i-sectx)<= 1 && abs(j-secty) <= 1)) {
 						sprintf(buf,"%c ",quad[i][j]);
-            MyPuts(buf);
-            }
-					else
+            		MyPuts(buf);
+            	} else {
 						MyPuts("- ");
+					}
 				}
 			}
 		}
-		
 		if (rightside) {
 			switch (jj) {
 				case 1:
 					sprintf(buf," Std %.1f", d.date);
-          MyPuts(buf);
-					break;
+          		MyPuts(buf);
+				break;
 				case 2:
 					if (condit != IHDOCKED) newcnd();
 					switch (condit) {
@@ -546,36 +599,35 @@ void srscan(int l) {
 						case IHDOCKED: cp = (char*)"DOCKED"; break;
 					}
 					sprintf(buf," Cond %s", cp);
-          MyPuts(buf);
+          		MyPuts(buf);
 #ifdef CLOAKING
-				    if (iscloaked) MyPuts(", CLOAKED");
+					if (iscloaked) MyPuts(", CLOAKED");
 #endif
-					break;
+				break;
 				case 3:
 					MyPuts(" Life Spt");
 					if (damage[DLIFSUP] != 0.0) {
-						if (condit == IHDOCKED)
+						if (condit == IHDOCKED) {
 							MyPuts(" On");
-						else {
+						} else {
 							sprintf(buf," Res. =%4.1f", lsupres);
               			MyPuts(buf);
               		}
-					}
-					else
+					} else
 						MyPuts(" On");
-					break;
+				break;
 				case 4:
 					sprintf(buf," Warp %.1f", warpfac);
-          MyPuts(buf);
-					break;
+          		MyPuts(buf);
+				break;
 				case 5:
 					sprintf(buf," E %.1f", energy);
-          MyPuts(buf);
-					break;
+         		 MyPuts(buf);
+				break;
 				case 6:
 					sprintf(buf," Torp %d", torps);
-          MyPuts(buf);
-					break;
+          		MyPuts(buf);
+				break;
 				case 7:
 					MyPuts(" Shld ");
 					if (damage[DSHIELD] != 0)
@@ -592,20 +644,23 @@ void srscan(int l) {
 				break;	
 				case 9:
 					sprintf(buf," Klingons %d", d.remkl);
-          MyPuts(buf);
+          		MyPuts(buf);
 					break;
 				case 10:
 					sprintf(buf," T left %.1f", d.remtime);
-          MyPuts(buf);
-					break;
-			}
-					
+          		MyPuts(buf);
+				break;
+			}	
 		}
 		skip(1);
 		if (k!=0) return;
 	}
-	if (nn) chart(1);
+	if (nn) {
+		chart(1);
+	}
 }
+
+
 void eta(void) {
 	int ix1, ix2, iy1, iy2, prompt=FALSE;
 	int wfl;

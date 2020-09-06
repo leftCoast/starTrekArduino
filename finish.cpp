@@ -76,13 +76,13 @@ int doPromotion(void) {
 
 	switch (skill) {
 		case SNOVICE:
-			prout((char*)"promotes you one step in rank from \"Novice\" to \"Fair\".");
+			prout((char*)"promotes you from \"Novice\" to \"Fair\".");
 		break;
 		case SFAIR:
-			prout((char*)"promotes you one step in rank from \"Fair\" to \"Good\".");
+			prout((char*)"promotes you from \"Fair\" to \"Good\".");
 		break;
 		case SGOOD:
-			prout((char*)"promotes you one step in rank from \"Good\" to \"Expert\".");
+			prout((char*)"promotes you from \"Good\" to \"Expert\".");
 		break;
 		case SEXPERT:
 			prout((char*)"promotes you to Commodore Emeritus.");
@@ -98,7 +98,7 @@ int doPromotion(void) {
 			prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
 			prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
 			prout((char*)"  THIS-PROGRAM-MUST-SURVIVE");
-			prout((char*)"  THIS-PROGRAM-MUST?- MUST ? - SUR? ? -?  VI");
+			prouts((char*)"  THIS-PROGRAM-MUST?- MUST ? - SUR? ? -?  VI");
 			skip(1);
 			prout((char*)"Now you can retire and write your own Star Trek game!");
 			skip(1);
@@ -376,22 +376,20 @@ void finish(FINTYPE ifin) {
 	
 	alldone = 1;
 	skip(3);
-	sprintf(buf,"It is stardate %.1f .\n\n", d.date);
-	MyPuts(buf);
+	sprintf(buf,"It is stardate %.1f.\n\n", d.date);
+	proutn(buf);
 	switch (ifin) {
 		case FWON: // Game has been won
+			prout((char*)"You have smashed the Klingon invasion fleet and saved the Federation.");
 			if (d.nromrem != 0) {
-				sprintf(buf,"The remaining %d Romulan ships surrender to Starfleet Command.\n",d.nromrem);
-        		MyPuts(buf);
+				sprintf(buf,"The remaining %d Romulan ships surrender to Starfleet Command.",d.nromrem);
+        		prout(buf);
 			}   
-			prout((char*)"You have smashed the Klingon invasion fleet and saved");
-			prout((char*)"the Federation.");
-
 #ifdef CAPTURE
 			if (alive && brigcapacity-brigfree > 0) { // captured Klingon crew will get transfered to starbase
 				kcaptured += brigcapacity-brigfree;
 				sprintf(buf,"The %d captured Klingons are transferred to Star Fleet Command.\n",brigcapacity-brigfree);
-				MyPuts(buf);
+				proutn(buf);
 			}
 #endif
 			gamewon=1;
@@ -409,11 +407,11 @@ void finish(FINTYPE ifin) {
 					|| (d.killk+d.killc+d.nsckill)/(d.date-indate)
 					>= 0.1*skill*(skill+1.0) + 0.1 + 0.008*badpt) {
 					skip(1);
-					prout((char*)"In fact, you have done so well that Starfleet Command");
+					proutn((char*)"In fact, you have done so well that Starfleet Command ");
 					igotit = doPromotion();
 				}
-				skip(1);
-				prout((char*)"LIVE LONG AND PROSPER."); // Only grant long life if alive. (original didn't!)
+				//skip(1);
+				prout((char*)"       LIVE LONG AND PROSPER."); // Only grant long life if alive. (original didn't!)
 			}
 			score(0);
 			if (igotit != 0) {
@@ -512,83 +510,83 @@ void score(int inGame) {
 	}
 	
 	if (d.nromkl) {
-		sprintf(buf,d.nromkl> 1 ? "%6d Romulan ships destroyed            %5d\n" : "%6d Romulan ship destroyed             %5d\n",d.nromkl, 20*d.nromkl);
+		sprintf(buf,d.nromkl> 1 ? "%4d Romulans destroyed %5d\n" : "%4d Romulan destroyed %5d\n",d.nromkl, 20*d.nromkl);
 		MyPuts(buf);
 	}
 	if (dnromrem) {
-		sprintf(buf,dnromrem > 1 ? "%6d Romulan ships surrendered         %5d\n" : "%6d Romulan ship surrendered           %5d\n",dnromrem, dnromrem);
+		sprintf(buf,dnromrem > 1 ? "%4d Romulans surrendered %5d\n" : "%4d Romulan surrendered %5d\n",dnromrem, dnromrem);
 		MyPuts(buf);
 	}
 	if (d.killk) {
-		sprintf(buf,d.killk > 1 ? "%6d ordinary Klingon ships destroyed   %5d\n" : "%6d ordinary Klingon ship destroyed    %5d\n",d.killk,  10*d.killk);
+		sprintf(buf,d.killk > 1 ? "%4d Klingons destroyed %5d\n" : "%4d Klingon ship destroyed %5d\n",d.killk,  10*d.killk);
 		MyPuts(buf);
 	}
 	if (d.killc) {
-		sprintf(buf,d.killc > 1 ? "%6d Klingon Commander ships destroyed  %5d\n" : "%6d Klingon Commander ship destroyed   %5d\n",d.killc, 50*d.killc);
+		sprintf(buf,d.killc > 1 ? "%4d Commanders destroyed %5d\n" : "%4d Commander destroyed %5d\n",d.killc, 50*d.killc);
 		MyPuts(buf);
 	}
 	if (d.nsckill) {
-		sprintf(buf,"%6d Super-Commander ship destroyed     %5d\n",d.nsckill, 200*d.nsckill);
+		sprintf(buf,"%4d Super-Commander destroyed %5d\n",d.nsckill, 200*d.nsckill);
 		MyPuts(buf);
 	}
 	if (ithperd) {
-		sprintf(buf,"%6.2f Klingon ships per stardate         %5d\n",perdate, ithperd);
+		sprintf(buf,"%6.2f Klingons per s.date %5d\n",perdate, ithperd);
 		MyPuts(buf);
 	}
 #ifdef CAPTURE
 	if (kcaptured) {
-		sprintf(buf,kcaptured > 1 ? "%6d Klingons captured                  %5d\n" : "%6d Klingon captured                   %5d\n",kcaptured, 3*kcaptured);
+		sprintf(buf,kcaptured > 1 ? "%4d Klingons captured %5d\n" : "%4d Klingon captured %5d\n",kcaptured, 3*kcaptured);
 		MyPuts(buf);
 	}
 #endif
 	if (d.starkl) {
-		sprintf(buf,d.starkl > 1 ? "%6d stars destroyed by your action     %5d\n" : "%6d star destroyed by your action      %5d\n",d.starkl, -5*d.starkl);
+		sprintf(buf,d.starkl > 1 ? "%4d stars destroyed %5d\n" : "%4d star destroyed %5d\n",d.starkl, -5*d.starkl);
 		MyPuts(buf);
 	}
 	if (d.nplankl) {
-		sprintf(buf,d.nplankl > 1 ? "%6d planets destroyed by your action   %5d\n" : "%6d planet destroyed by your action    %5d\n",d.nplankl, -10*d.nplankl);
+		sprintf(buf,d.nplankl > 1 ? "%4d planets destroyed %5d\n" : "%4d planet destroyed %5d\n",d.nplankl, -10*d.nplankl);
 		MyPuts(buf);
 	}
 	if (d.basekl) {
-		sprintf(buf,d.basekl > 1 ? "%6d bases destroyed by your action     %5d\n" : "%6d base destroyed by your action      %5d\n",d.basekl, -100*d.basekl);
+		sprintf(buf,d.basekl > 1 ? "%4d bases destroyed %5d\n" : "%4d base destroyed %5d\n",d.basekl, -100*d.basekl);
 		MyPuts(buf);
 	}
 	if (nhelp) {
-		sprintf(buf,nhelp > 1 ? "%6d calls for help from starbase       %5d\n" : "%6d call for help from starbase        %5d\n",nhelp, -45*nhelp);
+		sprintf(buf,nhelp > 1 ? "%4d calls for help %5d\n" : "%4d call for help %5d\n",nhelp, -45*nhelp);
 		MyPuts(buf);
 	}
 	if (casual) {
-		sprintf(buf,casual > 1 ? "%6d casualties incurred                %5d\n" : "%6d casualty incurred                  %5d\n",casual, -casual);
+		sprintf(buf,casual > 1 ? "%4d casualties %5d\n" : "%4d casualty %5d\n",casual, -casual);
 		MyPuts(buf);
 	}
 	if (klship) {
-		sprintf(buf,klship > 1 ? "%6d ships lost or destroyed            %5d\n" : "%6d ship lost or destroyed             %5d\n",klship, -100*klship);
+		sprintf(buf,klship > 1 ? "%4d ships lost %5d\n" : "%4d ship lost %5d\n",klship, -100*klship);
 		MyPuts(buf);
 	}
 #ifdef CLOAKING
 	if (ncviol>0) {
-		sprintf(buf,ncviol > 1 ? "%6d Treaty of Algeron violations       %5d\n" : "%6d Treaty of Algeron violation        %5d\n",ncviol, -100*ncviol);
+		sprintf(buf,ncviol > 1 ? "%4d Treaty violations %5d\n" : "%4d Treaty violation %5d\n",ncviol, -100*ncviol);
 		MyPuts(buf);
 	}
 #endif
 	if (alive==0)
-		prout((char*)"Penalty for getting yourself killed        -200");
+		prout((char*)"Penalty for getting killed -200");
 	if (gamewon) {
 		skip(1);
-		proutn((char*)"Bonus for winning ");
+		proutn((char*)"Winning bonus, ");
 		switch (skill) {
-			case SNOVICE: proutn((char*)"Novice game  "); break;
-			case SFAIR: proutn((char*)"Fair game    "); break;
-			case SGOOD: proutn((char*)"Good game    "); break;
-			case SEXPERT: proutn((char*)"Expert game  "); break;
+			case SNOVICE: proutn((char*)"Novice game"); break;
+			case SFAIR: proutn((char*)"Fair game"); break;
+			case SGOOD: proutn((char*)"Good game"); break;
+			case SEXPERT: proutn((char*)"Expert game"); break;
 			case SEMERITUS: proutn((char*)"Emeritus game"); break;
 		}
-		sprintf(buf,"           %5d\n", iwon);
-		MyPuts(buf);
+		sprintf(buf,"%4d\n",iwon);
+		proutn(buf);
 	}
-	skip(2);
-	sprintf(buf,"TOTAL SCORE                               %5d\n", iscore);
-	MyPuts(buf);
+	skip(1);
+	sprintf(buf,"TOTAL SCORE %4d\n",iscore);
+	proutn(buf);
 	if (inGame && skill < SGOOD) 
 		MyPuts("REMEMBER--The score doesn't really matter until the mission is accomplished!\n");
 }

@@ -52,7 +52,7 @@ void report(int f) {
 		case SEMERITUS: s3=(char*)"emeritus"; break;
 		default: s3=(char*)"skilled"; break;
 	}
-	sprintf(buf,"\nYou %s playing a %s%s %s game.\n",alldone? "were": "are now", s1, s2, s3);
+	sprintf(buf,"\nYou %s playing a %s%s %s game.\n",alldone? " were": "are", s1, s2, s3);
 	proutn(buf);
 	if (skill>SGOOD && thawed && !alldone) prout((char*)"No plaque is allowed.");
 	if (tourn) {

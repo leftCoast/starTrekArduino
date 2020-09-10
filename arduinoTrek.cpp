@@ -44,12 +44,13 @@ void prouts(char* s) {
 	}
 }
 
-
-// It wants this.
+#ifndef min
+// It needs this.
 int min(int a, int b) {
 	if (a < b) return a;
 	return b;
 }
+#endif
 
 // For debugging.
 void out(char* str) { Serial.print(str);Serial.flush(); }

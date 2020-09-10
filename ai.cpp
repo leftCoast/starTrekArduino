@@ -147,9 +147,9 @@ static void movebaddy(int comx, int comy, int loccom, int ienm) {
 			motion = ((forces+200.0*Rand())/150.0) - 5.0;
 		else {
 			if (forces > 1000.0) /* Very strong -- move in for kill */
-				motion = (1.0-square(Rand()))*dist1 + 1.0;
+				motion = (1.0-sqr(Rand()))*dist1 + 1.0;
 			if (condit==IHDOCKED) /* protected by base -- back off ! */
-				motion -= skill*(2.0-square(Rand()));
+				motion -= skill*(2.0-sqr(Rand()));
 		}
 #ifdef DEBUG
 		if (idebug) {
@@ -255,7 +255,7 @@ static void movebaddy(int comx, int comy, int loccom, int ienm) {
 		kx[loccom] = nextx;
 		ky[loccom] = nexty;
 		kdist[loccom] = kavgd[loccom] =
-					sqrt(square(sectx-nextx)+square(secty-nexty));
+					sqrt(sqr(sectx-nextx)+sqr(secty-nexty));
 		if (damage[DSRSENS] == 0 || condit == IHDOCKED) {
 			proutn((char*)"***");
 			cramen(ienm);
@@ -400,7 +400,7 @@ void scom(int *ipage) {
 			basetbl[i] = i;
 			ibqx = d.baseqx[i];
 			ibqy = d.baseqy[i];
-			bdist[i] = sqrt(square(ibqx-sx) + square(ibqy-sy));
+			bdist[i] = sqrt(sqr(ibqx-sx) + sqr(ibqy-sy));
 		}
 		if (d.rembase > 1) {
 			/* sort into nearest first order */

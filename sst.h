@@ -38,8 +38,8 @@ typedef struct
 EXTERN struct foo {
 		int snap,		// snapshot taken
 		remkl,			// remaining klingons
-	        remcom,			// remaining commanders
-		rembase,		// remaining bases
+	   remcom,			// remaining commanders
+		rembase,			// remaining bases
 		starkl,			// destroyed stars
 		basekl,			// destroyed bases
 		killk,			// Klingons killed
@@ -52,9 +52,9 @@ EXTERN struct foo {
 		isx, isy,		// Coordinate of Super Commander
 		nscrem,			// remaining super commanders
 		nromkl,			// Romulans killed
-		nromrem,		// Romulans remaining
-		nsckill,		// super commanders killed
-		nplankl;		// destroyed planets
+		nromrem,			// Romulans remaining
+		nsckill,			// super commanders killed
+		nplankl;			// destroyed planets
 	PLANETS plnets[PLNETMAX+1];  // Planet information
 #ifdef CAPTURE
     int kcaptured, brigfree;
@@ -370,8 +370,6 @@ EXTERN char citem[24];
 
 
 /* Function prototypes */
-void MyPuts(const char* s);
-void MyPutChar(char ch);
 void prelim(void);
 void attack(int);
 int choose(void);
@@ -421,7 +419,7 @@ double expran(double);
 double Rand(void);
 void iran8(int *, int *);
 void iran10(int *, int *);
-double square(double);
+double sqr(double);
 void dropin(int, int*, int*);
 void newcnd(void);
 void sortkl(void);
@@ -462,9 +460,13 @@ void out(char* str);
 void outln(char* str);
 
 #ifndef WINDOWS
-int min(int, int);
-int max(int, int);
+#undef min
+
+int min(int a, int b);
+//int max(int a, int b);
 #endif
+
+
 void randomize(void);
 int getch(void);
 

@@ -954,12 +954,12 @@ void help(void) {
 	nhelp++;
 	if (basex!=0) {
 		/* There's one in this quadrant */
-		ddist = sqrt(square(basex-sectx)+square(basey-secty));
+		ddist = sqrt(sqr(basex-sectx)+sqr(basey-secty));
 	}
 	else {
 		ddist = 1e30;
 		for (l = 1; l <= d.rembase; l++) {
-			xdist=10.0*sqrt(square(d.baseqx[l]-quadx)+square(d.baseqy[l]-quady));
+			xdist=10.0*sqrt(sqr(d.baseqx[l]-quadx)+sqr(d.baseqy[l]-quady));
 			if (xdist < ddist) {
 				ddist = xdist;
 				line = l;

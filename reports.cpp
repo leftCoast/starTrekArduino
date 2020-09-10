@@ -182,7 +182,7 @@ void lrscan(void) {
 		for (y = quady+1; y >= quady-1; y--) {
 			for (x = quadx-1; x <= quadx+1; x++) {
 				if (x == 0 || x > 8 || y == 0 || y > 8)
-					MyPuts("   -1");
+					proutn("   -1");
 				else {
 					sprintf(buf,"%5d", d.galaxy[x][y]);
 					proutn(buf);
@@ -193,13 +193,13 @@ void lrscan(void) {
 					starch[x][y] = damage[DRADIO] > 0 ? d.galaxy[x][y]+1000 :1;
 				}
 			}
-			MyPutChar('\n');
+			proutCh('\n');
 		}
 	} else {
 		for (x = quadx-1; x <= quadx+1; x++) {
 			for (y = quady-1; y <= quady+1; y++) {
 				if (x == 0 || x > 8 || y == 0 || y > 8)
-					MyPuts("   -1");
+					proutn("   -1");
 				else {
 					sprintf(buf,"%5d", d.galaxy[x][y]);
 					proutn(buf);
@@ -210,7 +210,7 @@ void lrscan(void) {
 					starch[x][y] = damage[DRADIO] > 0 ? d.galaxy[x][y]+1000 :1;
 				}
 			}
-			MyPutChar('\n');
+			proutCh('\n');
 		}
 	}
 }
@@ -289,9 +289,9 @@ void chart(int nn) {
 			proutn(buf);
 			for (i = 1; i <= 8; i++) {
 				if (starch[i][j] < 0) // We know only about the bases
-					MyPuts("  .1.");
+					proutn("  .1.");
 				else if (starch[i][j] == 0) // Unknown
-					MyPuts("  ...");
+					proutn("  ...");
 				else if (starch[i][j] > 999) { 				// Memorized value
 					sprintf(buf,"%5d", starch[i][j]-1000);
 					proutn(buf);
@@ -308,9 +308,9 @@ void chart(int nn) {
 			proutn(buf);
 			for (j = 1; j <= 8; j++) {
 				if (starch[i][j] < 0) 											// We know only about the bases
-					MyPuts("  .1.");
+					proutn("  .1.");
 				else if (starch[i][j] == 0)									// Unknown
-					MyPuts("  ...");
+					proutn("  ...");
 				else if (starch[i][j] > 999) {									// Memorized value
 					sprintf(buf,"%5d", starch[i][j]-1000);
 					proutn(buf);
@@ -363,7 +363,7 @@ void srscan(int l)
 			break;
 		case 2: // REQUEST
 			while (scan() == IHEOL)
-				MyPuts("Information desired? ");
+				proutn("Information desired? ");
 			chew();
 			for (k = 1; k <= 10; k++)
 				if (strncmp(citem,requests[k],min(2,strlen(citem)))==0)
@@ -385,28 +385,28 @@ void srscan(int l)
 		if (leftside) {
 			if (coordfixed) {
 				sprintf(buf,"%2d  ", 11-i);
-        MyPuts(buf);
+        proutn(buf);
 				for (j = 1; j <= 10; j++) {
 					if (goodScan || (abs((11-i)-secty)<= 1 && abs(j-sectx) <= 1))
             {
 						sprintf(buf,"%c ",quad[j][11-i]);
-            MyPuts(buf);
+            proutn(buf);
             }
 					else
-						MyPuts("- ");
+						proutn("- ");
 				}
 			} else {
 				sprintf(buf,"%2d  ", i);
-        MyPuts(buf);
+        proutn(buf);
         
 				for (j = 1; j <= 10; j++) {
 					if (goodScan || (abs(i-sectx)<= 1 && abs(j-secty) <= 1))
             {
 						sprintf(buf,"%c ",quad[i][j]);
-            MyPuts(buf);
+            proutn(buf);
             }
 					else
-						MyPuts("- ");
+						proutn("- ");
 				}
 			}
 		}
@@ -415,7 +415,7 @@ void srscan(int l)
 			switch (jj) {
 				case 1:
 					sprintf(buf," Stardate      %.1f", d.date);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 				case 2:
 					if (condit != IHDOCKED) newcnd();
@@ -426,61 +426,61 @@ void srscan(int l)
 						case IHDOCKED: cp = (char*)"DOCKED"; break;
 					}
 					sprintf(buf," Condition     %s", cp);
-          MyPuts(buf);
+          proutn(buf);
 #ifdef CLOAKING
-				    if (iscloaked) MyPuts(", CLOAKED");
+				    if (iscloaked) proutn(", CLOAKED");
 #endif
 					break;
 				case 3:
-					MyPuts(" Position     ");
+					proutn(" Position     ");
 					cramlc(0, quadx, quady);
-					MyPutChar(',');
+					proutCh(',');
 					cramlc(0, sectx, secty);
 					break;
 				case 4:
-					MyPuts(" Life Support  ");
+					proutn(" Life Support  ");
 					if (damage[DLIFSUP] != 0.0) {
 						if (condit == IHDOCKED)
-							MyPuts("DAMAGED, supported by starbase");
+							proutn("DAMAGED, supported by starbase");
 						else
               {
 							sprintf(buf,"DAMAGED, reserves=%4.2f", lsupres);
-              MyPuts(buf);
+              proutn(buf);
               }
 					}
 					else
-						MyPuts("ACTIVE");
+						proutn("ACTIVE");
 					break;
 				case 5:
 					sprintf(buf," Warp Factor   %.1f", warpfac);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 				case 6:
 					sprintf(buf," Energy        %.2f", energy);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 				case 7:
 					sprintf(buf," Torpedoes     %d", torps);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 				case 8:
-					MyPuts(" Shields       ");
+					proutn(" Shields       ");
 					if (damage[DSHIELD] != 0)
-						MyPuts("DAMAGED,");
+						proutn("DAMAGED,");
 					else if (shldup)
-						MyPuts("UP,");
+						proutn("UP,");
 					else
-						MyPuts("DOWN,");
+						proutn("DOWN,");
 					sprintf(buf," %d%% %.1f units",(int)((100.0*shield)/inshld + 0.5), shield);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 				case 9:
 					sprintf(buf," Klingons Left %d", d.remkl);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 				case 10:
 					sprintf(buf," Time Left     %.2f", d.remtime);
-          MyPuts(buf);
+          proutn(buf);
 					break;
 			}
 					
@@ -535,9 +535,9 @@ void chart(int nn) {
 			proutn(buf);
 			for (i = 1; i <= 8; i++) {
 				if (starch[i][j] < 0) // We know only about the bases
-					MyPuts(" .1.");
+					proutn(" .1.");
 				else if (starch[i][j] == 0) // Unknown
-					MyPuts(" ...");
+					proutn(" ...");
 				else if (starch[i][j] > 999) { 				// Memorized value
 					sprintf(buf,"%4d", starch[i][j]-1000);
 					proutn(buf);
@@ -554,9 +554,9 @@ void chart(int nn) {
 			proutn(buf);
 			for (j = 1; j <= 8; j++) {
 				if (starch[i][j] < 0) 											// We know only about the bases
-					MyPuts(" .1.");
+					proutn(" .1.");
 				else if (starch[i][j] == 0)									// Unknown
-					MyPuts(" ...");
+					proutn(" ...");
 				else if (starch[i][j] > 999) {									// Memorized value
 					sprintf(buf,"%4d", starch[i][j]-1000);
 					proutn(buf);
@@ -601,9 +601,9 @@ void srscan(int l) {
 	goodScan		= true;
 	switch (l) {
 		case 1: // SRSCAN
-			MyPuts("   Quadrant : ");											   // Lets put out our position as the Title line.
+			proutn("   Quadrant : ");											   // Lets put out our position as the Title line.
 			cramlc(0, quadx, quady);												// Format and output quadrant.
-			MyPuts("   Sector : ");													// Ouput Sector label..
+			proutn("   Sector : ");													// Ouput Sector label..
 			cramlc(0, sectx, secty);												// And lets see the sector.
 			
 			if (damage[DSRSENS] != 0) {											// If sensors are damaged..
@@ -622,18 +622,25 @@ void srscan(int l) {
 				}
 			}
 			scan();
-			if (isit((char*)"chart")) nn = TRUE;
-			if (isit((char*)"no")) rightside = FALSE;
+			if (isit((char*)"chart")) {
+				nn = TRUE;
+			}
+			if (isit((char*)"no")) {
+				rightside = FALSE;
+			}
 			chew();
 			prout((char*)"\n    1 2 3 4 5 6 7 8 9 10");
 		break;
 		case 2: // REQUEST
-			while (scan() == IHEOL)
-				MyPuts("Information desired? ");
+			while (scan() == IHEOL) {
+				proutn("Information desired? ");
+			}
 			chew();
-			for (k = 1; k <= 10; k++)
-				if (strncmp(citem,requests[k],min(2,strlen(citem)))==0)
+			for (k = 1; k <= 10; k++) {
+				if (strncmp(citem,requests[k],min(2,strlen(citem)))==0) {
 					break;
+				}
+			}
 			if (k > 10) {
 				prout((char*)"UNRECOGNIZED REQUEST. Legal requests are:\n"
 					 "  date, condition, position, lsupport, warpfactor,\n"
@@ -651,24 +658,24 @@ void srscan(int l) {
 		if (leftside) {
 			if (coordfixed) {
 				sprintf(buf,"%2d  ", 11-i);
-        		MyPuts(buf);
+        		proutn(buf);
 				for (j = 1; j <= 10; j++) {
 					if (goodScan || (abs((11-i)-secty)<= 1 && abs(j-sectx) <= 1)) {
 						sprintf(buf,"%c ",quad[j][11-i]);
-						MyPuts(buf);
+						proutn(buf);
             	} else {
-						MyPuts("- ");
+						proutn("- ");
 					}
 				}
 			} else {
 				sprintf(buf,"%2d  ", i);
-        		MyPuts(buf);
+        		proutn(buf);
 				for (j = 1; j <= 10; j++) {
 					if (goodScan || (abs(i-sectx)<= 1 && abs(j-secty) <= 1)) {
 						sprintf(buf,"%c ",quad[i][j]);
-            		MyPuts(buf);
+            		proutn(buf);
             	} else {
-						MyPuts("- ");
+						proutn("- ");
 					}
 				}
 			}
@@ -677,7 +684,7 @@ void srscan(int l) {
 			switch (jj) {
 				case 1:
 					sprintf(buf," Std %.1f", d.date);
-          		MyPuts(buf);
+          		proutn(buf);
 				break;
 				case 2:
 					if (condit != IHDOCKED) newcnd();
@@ -688,56 +695,56 @@ void srscan(int l) {
 						case IHDOCKED: cp = (char*)"DOCKED"; break;
 					}
 					sprintf(buf," Cond %s", cp);
-          		MyPuts(buf);
+          		proutn(buf);
 #ifdef CLOAKING
-					if (iscloaked) MyPuts(", CLOAKED");
+					if (iscloaked) proutn(", CLOAKED");
 #endif
 				break;
 				case 3:
-					MyPuts(" Life Spt");
+					proutn(" Life Spt");
 					if (damage[DLIFSUP] != 0.0) {
 						if (condit == IHDOCKED) {
-							MyPuts(" On");
+							proutn(" On");
 						} else {
 							sprintf(buf," Res. =%4.1f", lsupres);
-              			MyPuts(buf);
+              			proutn(buf);
               		}
 					} else
-						MyPuts(" On");
+						proutn(" On");
 				break;
 				case 4:
 					sprintf(buf," Warp %.1f", warpfac);
-          		MyPuts(buf);
+          		proutn(buf);
 				break;
 				case 5:
 					sprintf(buf," E %.1f", energy);
-         		 MyPuts(buf);
+         		 proutn(buf);
 				break;
 				case 6:
 					sprintf(buf," Torp %d", torps);
-          		MyPuts(buf);
+          		proutn(buf);
 				break;
 				case 7:
-					MyPuts(" Shld ");
+					proutn(" Shld ");
 					if (damage[DSHIELD] != 0)
-						MyPuts("Dmg");
+						proutn("Dmg");
 					else if (shldup)
-						MyPuts("Up");
+						proutn("Up");
 					else
-						MyPuts("Off");
+						proutn("Off");
 				break;
 				case 8:
-					MyPuts(" Shld ");
+					proutn(" Shld ");
 					sprintf(buf," %d%%",(int)((100.0*shield)/inshld + 0.5));
-					 MyPuts(buf);
+					 proutn(buf);
 				break;	
 				case 9:
 					sprintf(buf," Klingons %d", d.remkl);
-          		MyPuts(buf);
+          		proutn(buf);
 					break;
 				case 10:
 					sprintf(buf," T left %.1f", d.remtime);
-          		MyPuts(buf);
+          		proutn(buf);
 				break;
 			}	
 		}
@@ -794,8 +801,8 @@ void eta(void) {
 		huh();
 		return;
 	}
-	dist = sqrt(square(iy1-quadx+0.1*(iy2-sectx))+
-				square(ix1-quady+0.1*(ix2-secty)));
+	dist = sqrt(sqr(iy1-quadx+0.1*(iy2-sectx))+
+				sqr(ix1-quady+0.1*(ix2-secty)));
 	wfl = FALSE;
 
 	if (prompt) prout((char*)"Answer \"no\" if you don't know the value:");
@@ -829,7 +836,7 @@ void eta(void) {
 	}
 	while (TRUE) {
 		chew();
-		ttime = (10.0*dist)/square(twarp);
+		ttime = (10.0*dist)/sqr(twarp);
 		tpower = dist*twarp*twarp*twarp*(shldup+1);
 		if (tpower >= energy) { // Suggestion from Ethan Staffin -- give amount needed
 			prout((char*)"Insufficient energy, sir: we would need ");

@@ -511,62 +511,62 @@ void score(int inGame) {
 	
 	if (d.nromkl) {
 		sprintf(buf,d.nromkl> 1 ? "%4d Romulans destroyed %5d\n" : "%4d Romulan destroyed %5d\n",d.nromkl, 20*d.nromkl);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (dnromrem) {
 		sprintf(buf,dnromrem > 1 ? "%4d Romulans surrendered %5d\n" : "%4d Romulan surrendered %5d\n",dnromrem, dnromrem);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (d.killk) {
 		sprintf(buf,d.killk > 1 ? "%4d Klingons destroyed %5d\n" : "%4d Klingon ship destroyed %5d\n",d.killk,  10*d.killk);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (d.killc) {
 		sprintf(buf,d.killc > 1 ? "%4d Commanders destroyed %5d\n" : "%4d Commander destroyed %5d\n",d.killc, 50*d.killc);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (d.nsckill) {
 		sprintf(buf,"%4d Super-Commander destroyed %5d\n",d.nsckill, 200*d.nsckill);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (ithperd) {
 		sprintf(buf,"%6.2f Klingons per s.date %5d\n",perdate, ithperd);
-		MyPuts(buf);
+		proutn(buf);
 	}
 #ifdef CAPTURE
 	if (kcaptured) {
 		sprintf(buf,kcaptured > 1 ? "%4d Klingons captured %5d\n" : "%4d Klingon captured %5d\n",kcaptured, 3*kcaptured);
-		MyPuts(buf);
+		proutn(buf);
 	}
 #endif
 	if (d.starkl) {
 		sprintf(buf,d.starkl > 1 ? "%4d stars destroyed %5d\n" : "%4d star destroyed %5d\n",d.starkl, -5*d.starkl);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (d.nplankl) {
 		sprintf(buf,d.nplankl > 1 ? "%4d planets destroyed %5d\n" : "%4d planet destroyed %5d\n",d.nplankl, -10*d.nplankl);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (d.basekl) {
 		sprintf(buf,d.basekl > 1 ? "%4d bases destroyed %5d\n" : "%4d base destroyed %5d\n",d.basekl, -100*d.basekl);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (nhelp) {
 		sprintf(buf,nhelp > 1 ? "%4d calls for help %5d\n" : "%4d call for help %5d\n",nhelp, -45*nhelp);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (casual) {
 		sprintf(buf,casual > 1 ? "%4d casualties %5d\n" : "%4d casualty %5d\n",casual, -casual);
-		MyPuts(buf);
+		proutn(buf);
 	}
 	if (klship) {
 		sprintf(buf,klship > 1 ? "%4d ships lost %5d\n" : "%4d ship lost %5d\n",klship, -100*klship);
-		MyPuts(buf);
+		proutn(buf);
 	}
 #ifdef CLOAKING
 	if (ncviol>0) {
 		sprintf(buf,ncviol > 1 ? "%4d Treaty violations %5d\n" : "%4d Treaty violation %5d\n",ncviol, -100*ncviol);
-		MyPuts(buf);
+		proutn(buf);
 	}
 #endif
 	if (alive==0)
@@ -588,7 +588,7 @@ void score(int inGame) {
 	sprintf(buf,"TOTAL SCORE %4d\n",iscore);
 	proutn(buf);
 	if (inGame && skill < SGOOD) 
-		MyPuts("REMEMBER--The score doesn't really matter until the mission is accomplished!\n");
+		proutn("REMEMBER--The score doesn't really matter until the mission is accomplished!\n");
 }
 
 void plaque(void) 

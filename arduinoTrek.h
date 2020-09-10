@@ -33,8 +33,9 @@ extern void out(char* str);		// No \n
 extern void outln(char* str);		// Adds a \n
 
 // It wants this.
+#ifndef min
 extern int min(int a, int b);
-
+#endif
 
 // Add to the end of your setup() function.
 void arduinoTrekSetup(void);

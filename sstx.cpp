@@ -117,28 +117,6 @@ static void listCommands(int x) {
 }
 
 
-void MyGets(char* str,int len) {
-
-	int	count=0;
-	char	ch;
-	
-	while(count<len-1) {
-		ch = (char)getch();
-		str[count]=ch;
-		count++;
-		str[count]='\0';
-		if(ch=='\n') {
-			return;      
-		}
-	}
-}
-
-
-void MyPuts(const char* s) { proutn(s); }
-
-void MyPutChar(char c) { proutCh(c); }
-
-
 static void helpme(void) {
   //int i;
   //int j;
@@ -467,27 +445,36 @@ void cramen(int i)
   proutn(s);
 }
 
-void cramlc(int key, int x, int y) 
-{
-  if (key == 1) proutn((char*)" Quadrant");
-  else if (key == 2) proutn((char*)" Sector");
-  proutn((char*)" ");
-  crami(x, 1);
-  proutn((char*)",");
-  crami(y, 1);
+
+void cramlc(int key, int x, int y) {
+  
+	if (key == 1) {
+		proutn((char*)" Quadrant");
+	} else if (key == 2) {
+		proutn((char*)" Sector");
+	}
+	proutn((char*)" ");
+	crami(x, 1);
+	proutn((char*)",");
+	crami(y, 1);
 }
 
-void crmena(int i, int enemy, int key, int x, int y) 
-{
-  if (i == 1) proutn((char*)"***");
+
+void crmena(int i, int enemy, int key, int x, int y) {
+  
+  if (i == 1) {
+  	proutn((char*)"***");
+  }
   cramen(enemy);
   proutn((char*)" at");
   cramlc(key, x, y);
 }
 
-void crmshp(void) 
-{
-  char *s;
+
+void crmshp(void) {
+
+  char* s;
+  
   switch (ship) {
     case IHE: s = (char*)"Enterprise"; break;
     case IHF: s = (char*)"Faerie Queene"; break;
@@ -495,6 +482,7 @@ void crmshp(void)
   }
   proutn(s);
 }
+
 
 void stars(void) {
 	
@@ -519,79 +507,93 @@ void iran8(int *i, int *j)
   *j = Rand() * 8.0 + 1.0;
 }
 
+
 void iran10(int *i, int *j) 
 {
   *i = Rand() * 10.0 + 1.0;
   *j = Rand() * 10.0 + 1.0;
 }
 
-void chew(void) 
-{
-  linecount = 0;
-  linep = line;
-  *linep = 0;
+
+void chew(void) {
+
+	linecount = 0;
+	linep = line;
+	line[0] = '\0';
 }
 
 void chew2(void) {
-  /* return IHEOL next time */
-  linecount = 0;
-  linep = line + 1;
-  *linep = 0;
+
+	linecount = 0;
+	linep = &(line[1]);
+	line[1] = '\0';
 }
 
+
+void gets(char* str,int len) {
+
+	char	ch;
+	int	count=0;
+
+	while(count<len-1) {					// While we have not run out of buffer..
+		ch = (char)getch();				// Grab a char.
+		if(ch=='\n' || ch=='\0') {		// If its either a '\n' or '\0'..
+			str[count]='\0';				// Stuff in a '\0'.
+			return;							// And we are done!
+		} else {								// Else it wasn't.
+			str[count]=ch;					// So we save it in the buffer at index count.
+		}
+		count++;								// Bump up count.
+		str[count]= '\0';					// Just in case we pre-load the buffer at index count with a '\0'.
+	}
+}
+
+
+// We must scan the incoming stream of characters for a double value token or a text
+// token. Where we are in the input string is saved by the gloabal linep.
 int scan(void) {
-  int i;
-  char *cp;
 
-  linecount = 0;
+	int	i;
+	char*	cp;
 
-  // Init result
-  aaitem = 0.0;
-  *citem = 0;
-
-  // Read a line if nothing here
-  if (*linep == 0) {
-    if (linep != line) {
-      chew();
-      return IHEOL;
-    }
-    //		gets(line);
-    // We should really be using fgets
-//    fgets(line, sizeof(line), stdin);
-    MyGets(line, sizeof(line));
-    if (line[strlen(line) - 1] == '\n')
-      line[strlen(line) - 1] = '\0';
-    linep = line;
-  }
-  // Skip leading white space
-  while (*linep == ' ') linep++;
-  // Nothing left
-  if (*linep == 0) {
-    chew();
-    return IHEOL;
-  }
-  if (isdigit(*linep) || *linep == '+' || *linep == '-' || *linep == '.') {
-    // treat as a number
-    if (sscanf(linep, "%lf%n", &aaitem, &i) < 1) {
-      linep = line; // Invalid numbers are ignored
-      *linep = 0;
-      return IHEOL;
-    }
-    else {
-      // skip to end
-      linep += i;
-      return IHREAL;
-    }
-  }
-  // Treat as alpha
-  cp = citem;
-  while (*linep && *linep != ' ') {
-    if ((cp - citem) < 9) *cp++ = tolower(*linep);
-    linep++;
-  }
-  *cp = 0;
-  return IHALPHA;
+	linecount = 0;																					// The global linecount gets defaulted to zero.
+	aaitem = 0.0;																					// The global aaitem gets defaulted to a zero.
+	*citem = 0;																						// The global citem gets defaulted to empty string.
+	if (*linep == 0) {																			// If linep is pointing at \0..
+		if (linep != line) {																		// If the line ptr is not pointing at the beginning of the line buff..
+			chew();																					// chew() makes linecont = 0 and points the line ptr at the beginning of the line buff.
+			return IHEOL;																			// return IHEOL.. Need to look that up.
+		}
+		gets(line, sizeof(line));																// gets() will spin on getch() until it gets a '\n'. Does not copy the '\n';
+		linep = line;																				// A fresh bit of text means we need to reset the linep pointer to the beginning of the text.
+	}
+	while (*linep == ' ') linep++;															// Skip leading white space..
+	if (*linep == 0) {																			// If we are now pointing at '\0'..
+		chew();																						// chew() makes the global linecont = 0 and points the linep at the beginning of the global line buff. 
+		return IHEOL;																				// return IHEOL.. Again, need to look that up.
+	}																									// At this point, linep is pointing at first non white space in the non empty global line.
+	if (isdigit(*linep) || *linep == '+' || *linep == '-' || *linep == '.') {	// If its a diget, plus, minus or period.. ( Treat it as a number. )
+		if (sscanf(linep, "%lf%n", &aaitem, &i) < 1) {									// If we can NOT find a double in this mess.. (i gets the count of chars it read.)
+			linep = line; 																			// Reset linep to point at the beginning of line.
+			*linep = 0;																				// Stamp a '\0' at the head of line. (Effectively clearing the input.)
+			return IHEOL;																			// Return.. YOu guessed it, IHEOL.
+		} else {																						// Else we DID find a number in line it got written into the global aaitem.
+			linep += i;																				// It says "skip to end". It adds the number chars to the pointer value, upping its index.
+			return IHREAL;																			// Return IHREAL. This means, we parsed a real into the global aaitem.
+		}
+	}																									// At this point line is treated as alpha. (linep is pointing to the first nonwhite char.)
+	cp = citem;																						// cp now points at the beginning of citem. citem is a global cstr of 24 bytes.
+	while (*linep && *linep != ' ') {														// While what linep is pointing at is not '\0' or a blank..
+		if ((cp - citem) < 9) {																	// If.. ( This mess means cp is pointing to array index 0..8 of the global citem )
+			*cp++ = tolower(*linep);															// Stuff lowercase version of what linep is currently pointing at. Into global citem at the location cp is pointing at. Then, increment the cp pointer.							 
+		}																								// Oh, so clever that last line..
+		linep++;																						// In any case, update linep to the next character.
+	}																	
+	*cp = 0;																							// Loop exited, stomp a '\0' into global citem at the location cp is pointing to. 
+	return IHALPHA;																				// And I assume this means we tell the world we just parsed an alpha token.
 }
+
+
 
 int ja(void) {
   
@@ -617,15 +619,13 @@ void crami(int i, int w) {
   proutn(buf);
 }
 
-double square(double i) {
+double sqr(double i) {
   return i * i;
 }
 
-void clearscreen(void) {
-  /* Somehow we need to clear the screen */
-  proutn((char*)"\n\n\n\n\n\n\n\n\n\n\n\n");	/* Hope for an ANSI display */ // It ain't. So we do the linefeed thing.
-  
-}
+// Somehow we need to clear the screen. Hope for an ANSI display
+void clearscreen(void) { proutn((char*)"\e[2J"); }
+
 
 /* We will pull these out in case we want to do something special later */
 
@@ -633,7 +633,7 @@ void pause(int i) {
 #ifdef CLOAKING
   if (iscloaked) return;
 #endif
-  MyPutChar('\n');
+  proutCh('\n');
   if (i == 1) {
     if (skill > SFAIR)
       prout((char*)"[ANNOUNCEMENT ARRIVING...]");
@@ -653,8 +653,8 @@ void pause(int i) {
     clearscreen();
   }
   linecount = 0;
-  Serial.println("exiting pause()");Serial.flush();
 }
+
 
 void skip(int i) {
   while (i-- > 0) {
@@ -662,7 +662,7 @@ void skip(int i) {
     if (linecount >= 23)
       pause(0);
     else
-      MyPutChar('\n');
+      proutCh('\n');
   }
 }
 
@@ -679,6 +679,7 @@ void huh(void)
   skip(1);
   prout((char*)"Beg your pardon, Captain?");
 }
+
 
 int isit(char *s) {
   /* New function -- compares s to scaned citem and returns true if it

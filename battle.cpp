@@ -1,4 +1,4 @@
-	#include "sst.h"
+#include "sst.h"
 
 #ifdef CLOAKING
 void cloak(void) {
@@ -307,7 +307,7 @@ void torpedo(double course, double r, int inx, int iny, double *hit)
 				crmshp();
 				prout((char*)".");
 				*hit = 700.0 + 100.0*Rand() -
-					   1000.0*sqrt(square(ix-inx)+square(iy-iny))*
+					   1000.0*sqrt(sqr(ix-inx)+sqr(iy-iny))*
 					   fabs(sin(bullseye-angle));
 				*hit = fabs(*hit);
 				newcnd(); /* undock */
@@ -350,7 +350,7 @@ void torpedo(double course, double r, int inx, int iny, double *hit)
 					if (ix==kx[ll] && iy==ky[ll]) break;
 				kp = fabs(kpower[ll]);
 				h1 = 700.0 + 100.0*Rand() -
-					 1000.0*sqrt(square(ix-inx)+square(iy-iny))*
+					 1000.0*sqrt(sqr(ix-inx)+sqr(iy-iny))*
 					 fabs(sin(bullseye-angle));
 				h1 = fabs(h1);
 				if (kp < h1) h1 = kp;
@@ -450,7 +450,7 @@ void torpedo(double course, double r, int inx, int iny, double *hit)
 				skip(1);
 				crmena(1, IHT, 2, ix, iy);
 				h1 = 700.0 + 100.0*Rand() -
-					 1000.0*sqrt(square(ix-inx)+square(iy-iny))*
+					 1000.0*sqrt(sqr(ix-inx)+sqr(iy-iny))*
 					 fabs(sin(bullseye-angle));
 				h1 = fabs(h1);
 				if (h1 >= 600) {
@@ -489,7 +489,7 @@ void torpedo(double course, double r, int inx, int iny, double *hit)
 		cramlc(2, jx, jy);
 		skip(1);
 		for (ll=1; ll<=nenhere; ll++)
-			kdist[ll] = kavgd[ll] = sqrt(square(sectx-kx[ll])+square(secty-ky[ll]));
+			kdist[ll] = kavgd[ll] = sqrt(sqr(sectx-kx[ll])+sqr(secty-ky[ll]));
 		sortkl();
 		return;
 	}
@@ -648,7 +648,7 @@ void attack(int k)
 		hittot += hit;
 		fry(hit);
 		sprintf(buf,"Hit %g energy %g\n", hit, energy);
-    MyPuts(buf);
+    	proutn(buf);
 		energy -= hit;
 	}
 	if (energy <= 0) {
@@ -1405,24 +1405,24 @@ void capture(void)
 	/* Make sure there is room in the brig */
 	if (brigfree == 0)
 	{
-		MyPuts("Security reports the brig is already full.\n");
+		proutn("Security reports the brig is already full.\n");
 		return;
 	}
 
 	if (!REPORTS) {
-		MyPuts("Uhura- \"We have no subspace radio communication, sir.\"\n");
+		proutn("Uhura- \"We have no subspace radio communication, sir.\"\n");
 		return;
 	}
 
 	if (damage[DTRANSP] != 0) {
-		MyPuts("Scotty- \"Transporter damaged, sir.\"\n");
+		proutn("Scotty- \"Transporter damaged, sir.\"\n");
 		return;
 	}
 
 	/* find out if there are any at all */
 	if (klhere < 1)
 	{
-		MyPuts("Uhura- \"Getting no response, sir.\"\n");
+		proutn("Uhura- \"Getting no response, sir.\"\n");
 		return;
 	}
 
@@ -1441,37 +1441,37 @@ void capture(void)
 	i = x;
 #ifdef DEBUG
 	sprintf(buf,"Prob = %d (%.4f)\n", i, x);
-  MyPuts(buf);
+  	proutn(buf);
 //	i = 100; // For testing, of course!
 #endif
 	if (i > 100*Rand())
 	{
 		/* guess what, he surrendered!!! */
 		sprintf(buf,"Klingon captain at %d,%d surrenders\n", kx[k], ky[k]);
-    MyPuts(buf);
+    	proutn(buf);
 		i = 200*Rand();
 		if ( i > 0 )
       {
 			sprintf(buf,"%d Klingons commit suicide rather than be taken captive\n", 200 - i);
-      MyPuts(buf);
+      	proutn(buf);
       }
 		if (i > brigfree && condit != IHDOCKED)
 		  {
 			sprintf(buf,"%d Klingons die because there is no room for them in the brig.\n", i-brigfree);
-      MyPuts(buf);
+      	proutn(buf);
 			i = brigfree;
 		  }
 		if (condit != IHDOCKED) 
 		  {
 			brigfree -= i;
 			sprintf(buf,"%d captives taken\n", i);
-      MyPuts(buf);
+      	proutn(buf);
 		  } 
 		else 
 		{
 			kcaptured += i;
 			sprintf(buf,"%d captives taken and transferred to base\n", i);
-      MyPuts(buf);
+      	proutn(buf);
 		}
 		deadkl(kx[k], ky[k], quad[kx[k]][ky[k]], kx[k], ky[k]);
 		if (d.remkl==0) finish(FWON);
@@ -1479,7 +1479,7 @@ void capture(void)
 	}
 
 	/* big surprise, he refuses to surrender */
-	MyPuts("Fat chance, captain\n");
+	proutn("Fat chance, captain\n");
 	return;
 }
 

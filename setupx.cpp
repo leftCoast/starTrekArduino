@@ -1,4 +1,3 @@
-//#include <time.h>
 #include "sst.h"
 
 void prelim(void) 
@@ -190,12 +189,12 @@ void setupsst(void)
 			contflag = FALSE;
 			for (j = i-1; j > 0; j--) {
 				/* Improved placement algorithm to spread out bases */
-				double distq = square(ix-d.baseqx[j]) + square(iy-d.baseqy[j]);
+				double distq = sqr(ix-d.baseqx[j]) + sqr(iy-d.baseqy[j]);
 				if (distq < 6.0*(6-inbase) && Rand() < 0.75) {
 					contflag = TRUE;
 #ifdef DEBUG
 					sprintf(buf,"DEBUG: Abandoning base #%d at %d-%d\n", i, ix, iy);
-          MyPuts(buf);
+          		proutn(buf);
 #endif
 					break;
 				}
@@ -203,7 +202,7 @@ void setupsst(void)
 				else if (distq < 6.0 * (6-inbase)) 
 				{
 					sprintf(buf,"DEBUG: saving base #%d, close to #%d\n", i, j);
-          MyPuts(buf);
+          		proutn(buf);
 				}
 #endif
 			}
@@ -290,36 +289,37 @@ void setupsst(void)
 //	idate = date;
 	skip(3);
 	d.snap = 0;
-		
-	if (skill == SNOVICE)
-	{
-  char buf[256];
-		sprintf(buf,"It is stardate %d. The Federation is being attacked by\n",(int)d.date);
-    MyPuts(buf);
-		sprintf(buf,"a deadly Klingon invasion force. As captain of the United\n"
-			   "Starship U.S.S. Enterprise, it is your mission to seek out\n"
-			   "and destroy this invasion force of %d battle cruisers.\n",
+	clearscreen();	
+	if (skill == SNOVICE) {
+  		char buf[256];
+  		
+		sprintf(buf,"It is stardate %d. The Federation is being attacked by ",(int)d.date);
+    	proutn(buf);
+		sprintf(buf,"a deadly Klingon invasion force. As captain of the United "
+			   "Starship U.S.S. Enterprise, it is your mission to seek out "
+			   "and destroy this invasion force of %d battle cruisers. ",
 			   inkling);
-    MyPuts(buf);
-		sprintf(buf,"You have an initial allotment of %d stardates to complete\n"
-			   "your mission.  As you proceed you may be given more time.\n\n"
+    	proutn(buf);
+    	skip(4);
+    	pause(0);
+    	clearscreen();
+		sprintf(buf,"You have an initial allotment of %d stardates to complete "
+			   "your mission.  As you proceed you may be given more time.\n"
 			   "You will have %d supporting starbases.\n"
-			   "Starbase locations-  ",
+			   "Starbase locations : ",
 			   (int)intime, inbase);
-    MyPuts(buf);
-	}
-	else 
-	{
-  char buf[128];
+    	proutn(buf);	
+	} else {
+  		char buf[128];
+  		
 		sprintf(buf,"Stardate %d.\n\n%d Klingons,\nan unknown number of Romulans\n",(int)d.date, inkling);
-    MyPuts(buf);
-		if (d.nscrem)
-     {
-		 sprintf(buf,"and one (GULP) Super-Commander.\n");
-     MyPuts(buf);
+		proutn(buf);
+		if (d.nscrem) {
+			sprintf(buf,"and one (GULP) Super-Commander.\n");
+			proutn(buf);
      }
 		sprintf(buf,"%d stardates\n%d starbases in  ",(int)intime, inbase);
-    MyPuts(buf);   
+		proutn(buf);   
 	}
 	for (i = 1; i <= inbase; i++) {
 		cramlc(0, d.baseqx[i], d.baseqy[i]);
@@ -537,7 +537,7 @@ void newqad(int shutup) {
 			dropin(IHK, &ix, &iy);
 			kx[i] = ix;
 			ky[i] = iy;
-			kdist[i] = kavgd[i] = sqrt(square(sectx-ix) + square(secty-iy));
+			kdist[i] = kavgd[i] = sqrt(sqr(sectx-ix) + sqr(secty-iy));
 			kpower[i] = Rand()*150.0 +300.0 +25.0*skill;
 		}
 		// If we need a commander, promote a Klingon
@@ -563,7 +563,7 @@ void newqad(int shutup) {
 		dropin(IHR, &ix, &iy);
 		kx[i] = ix;
 		ky[i] = iy;
-		kdist[i] = kavgd[i] = sqrt(square(sectx-ix) + square(secty-iy));
+		kdist[i] = kavgd[i] = sqrt(sqr(sectx-ix) + sqr(secty-iy));
 		kpower[i] = Rand()*400.0 + 450.0 + 50.0*skill;
 	}
 	sortkl();

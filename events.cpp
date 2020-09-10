@@ -109,7 +109,7 @@ void events(void) {
 				     (torps < 5 || damage[DPHOTON] > 0))) {
 					/* Tractor-beam her! */
 					istract=1;
-					yank = square(d.isx-quadx) + square(d.isy-quady);
+					yank = sqr(d.isx-quadx) + sqr(d.isy-quady);
 					/*********TBEAM CODE***********/
 				}
 				else return;
@@ -120,7 +120,7 @@ void events(void) {
 						break;
 					}
 					i = Rand()*d.remcom+1.0;
-					yank = square(d.cx[i]-quadx) + square(d.cy[i]-quady);
+					yank = sqr(d.cx[i]-quadx) + sqr(d.cy[i]-quady);
 					if (istract || condit == IHDOCKED ||
 #ifdef CLOAKING
 					    iscloaked || /* cannot tractor beam if we can't be seen */
@@ -576,7 +576,7 @@ void nova(int ix, int iy) {
 							quad[newcx][newcy] = iquad;
 							kx[ll] = newcx;
 							ky[ll] = newcy;
-							kavgd[ll] = sqrt(square(sectx-newcx)+square(secty-newcy));
+							kavgd[ll] = sqrt(sqr(sectx-newcx)+sqr(secty-newcy));
 							kdist[ll] = kavgd[ll];
 							skip(1);
 							break;
@@ -689,7 +689,7 @@ void snova(int insx, int insy) {
 		skip(1);
 		nqx = quadx;
 		nqy = quady;
-		if (square(nsx-sectx) + square(nsy-secty) <= 2.1) {
+		if (sqr(nsx-sectx) + sqr(nsy-secty) <= 2.1) {
 			proutn((char*)"Emergency override attempts t");
 			prouts((char*)"***************");
 			skip(1);

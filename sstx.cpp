@@ -118,10 +118,7 @@ static void listCommands(int x) {
 
 
 static void helpme(void) {
-  //int i;
-  //int j;
-  //char cmdbuf[32];
-  //char linebuf[132];
+
   prout((char*)"Spock-  \"Captain, that information is missing from the");
   prout((char*)"   computer. You need to find SST.DOC and put it in the");
   prout((char*)"   current directory.\"");
@@ -143,6 +140,7 @@ static void makemoves(void) {
       skip(1);
       proutn((char*)"COMMAND> ");
       if (scan() == IHEOL) continue;
+      if (quickExit) return;
       for (i = 0; i < 29; i++) // Abbreviations allowed for the first 29 commands, only.
         if (isit(commands[i]))
           break;
@@ -283,7 +281,8 @@ static void makemoves(void) {
         prout((char*)"Tried to Exit - can't");
         //close();	// even close doesn't work. Odd.
         alldone = 1; // quit the game.
-        break;
+        quickExit = true;
+        return;
       case 25:
         probe(); // Launch probe
         break;
@@ -395,11 +394,13 @@ int runsst (int argc, char **argv)
 
   while (TRUE) { /* Play a game */
     setupsst();
+     if (quickExit) return;
     if (alldone) {
       score(0);
       alldone = 0;
     }
     else makemoves();
+    if (quickExit) return;
     skip(2);
     stars();
     skip(1);
@@ -537,6 +538,7 @@ void gets(char* str,int len) {
 
 	while(count<len-1) {					// While we have not run out of buffer..
 		ch = (char)getch();				// Grab a char.
+		if (quickExit) return;
 		if(ch=='\n' || ch=='\0') {		// If its either a '\n' or '\0'..
 			str[count]='\0';				// Stuff in a '\0'.
 			return;							// And we are done!
@@ -556,6 +558,7 @@ int scan(void) {
 	int	i;
 	char*	cp;
 
+	if (quickExit) return;
 	linecount = 0;																					// The global linecount gets defaulted to zero.
 	aaitem = 0.0;																					// The global aaitem gets defaulted to a zero.
 	*citem = 0;																						// The global citem gets defaulted to empty string.
@@ -565,6 +568,7 @@ int scan(void) {
 			return IHEOL;																			// return IHEOL.. Need to look that up.
 		}
 		gets(line, sizeof(line));																// gets() will spin on getch() until it gets a '\n'. Does not copy the '\n';
+		if (quickExit) return;
 		linep = line;																				// A fresh bit of text means we need to reset the linep pointer to the beginning of the text.
 	}
 	while (*linep == ' ') linep++;															// Skip leading white space..
@@ -600,6 +604,7 @@ int ja(void) {
   chew();
   while (TRUE) {
     scan();
+    if (quickExit) return;
     chew();
     if (*citem == 'y') return TRUE;
     if (*citem == 'n') return FALSE;
@@ -630,6 +635,7 @@ void clearscreen(void) { proutn((char*)"\e[2J"); }
 /* We will pull these out in case we want to do something special later */
 
 void pause(int i) {
+
 #ifdef CLOAKING
   if (iscloaked) return;
 #endif
@@ -640,6 +646,7 @@ void pause(int i) {
     else
       prout((char*)"[IMPORTANT ANNOUNCEMENT ARRIVING -- HIT ENTER TO CONTINUE]");
     getch();
+    if (quickExit) return;
   }
   else {
     if (skill > SFAIR)
@@ -647,6 +654,7 @@ void pause(int i) {
     else
       proutn((char*)"[HIT ENTER TO CONTINUE]");
     getch();
+    if (quickExit) return;
     proutn((char*)"\r                           \r");
   }
   if (i != 0) {
@@ -719,6 +727,7 @@ void debugme(void) {
       proutn("? ");
       chew();
       key = scan();
+      if (quickExit) return;
       if (key == IHALPHA &&  isit("y")) {
         damage[i] = 10.0;
         if (i == DRADIO) stdamtim = d.date;
@@ -744,6 +753,7 @@ void debugme(void) {
       chew();
       proutn("  ?");
       key = scan();
+      if (quickExit) return;
       if (key == IHREAL) {
         future[i] = d.date + aaitem;
       }

@@ -127,14 +127,16 @@ void setupsst(void)
 {
 	int i,j, krem, klumper;
 	int ix, iy;
-  char buf[128];
-  
+	char buf[128];
+	
+	if (quickExit) return;
 	alldone = gamewon = 0;
 #ifdef DEBUG
 	idebug = 0;
 #endif
 	//  Decide how many of everything
 	if (choose()) return; // frozen game
+	if (quickExit) return;
 	// Prepare the Enterprise
 	ship = IHE;
 	energy = inenrg = 5000.0;
@@ -340,6 +342,7 @@ void setupsst(void)
 }
 
 int choose(void) {
+	
 	tourn = 0;
 	thawed = 0;
 	skill = 0;
@@ -350,9 +353,11 @@ int choose(void) {
 		else
 			proutn((char*)"Would you like a regular, tournament, or frozen game?");
 		scan();
+		if (quickExit) return;
 		if (strlen(citem)==0) continue; // Try again
 		if (isit((char*)"tournament")) {
 			while (scan() == IHEOL) {
+				if (quickExit) return;
 				proutn((char*)"Type in tournament number-");
 			}
 			if (aaitem == 0) {
@@ -387,6 +392,7 @@ int choose(void) {
 	}
 	while (length==0 || skill==0) {
 		if (scan() == IHALPHA) {
+			if (quickExit) return;
 			if (isit((char*)"short")) length = 1;
 			else if (isit((char*)"medium")) length = 2;
 			else if (isit((char*)"long")) length = 4;
@@ -409,6 +415,7 @@ int choose(void) {
 	}
 	while (TRUE) {
 		scan();
+		if (quickExit) return;
 		strcpy(passwd, citem);
 		chew();
 		if (*passwd != 0) break;

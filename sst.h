@@ -454,10 +454,10 @@ void movetho(void);
 void probe(void);
 void clearscreen(void);
 
-// Arduino calls
-//void close(void);
+// Arduino stuff
 void out(char* str);
 void outln(char* str);
+extern bool	quickExit;
 
 #ifndef WINDOWS
 #undef min

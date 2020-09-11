@@ -4,6 +4,9 @@
 #include "sst.h"
 
 
+// We need to shut this nonsense off NOW!
+bool	quickExit = false;
+
 // Our output buffer that the ported code will see.
 textBuff*	trekComBuffer;
 
@@ -16,7 +19,13 @@ int getch() {
 
 	char theChar;
 	
-	while (trekComBuffer->empty()) sleep(10);
+	while (trekComBuffer->empty()) {
+		sleep(10);
+		if (quickExit) {
+			out("getch() got quick");
+			return ((int)'\n');
+		}
+	}
 	return (int)trekComBuffer->readChar();
 }
 
@@ -74,11 +83,13 @@ void arduinoTrekSetup(void) {
 void arduinoTrekLoop(void) {
 
 	setupsst();
+	if (quickExit) return;
 	if (alldone) {
 		score(0);
 		alldone = 0;
 	} else {
 		doMakeMoves();
+		if (quickExit) return;
 	}
 	skip(2);
 	stars();

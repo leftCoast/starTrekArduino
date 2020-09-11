@@ -1,24 +1,20 @@
 #include "sst.h"
 
-void prelim(void) 
-{
+void prelim(void) {
+	
 	skip(2);
-	prout((char*)"-SUPER- STAR TREK");
+	prout((char*)"               -SUPER-");
+	prout((char*)"              STAR TREK");
 	skip(1);
-	prout((char*)"Latest update-21 Sept 78");
+	prout((char*)"       Latest update-21 Sept 1978");
 	skip(1);
 }
 
-void freeze(int boss) 
-{
-}
+void freeze(int boss) { }
 
-void thaw(void) 
-{
-}
+void thaw(void) { }
 
-void abandon(void) 
-{
+void abandon(void) {
 	int nb, l;
 
 	chew();
@@ -306,7 +302,7 @@ void setupsst(void)
     	pause(0);
     	clearscreen();
 		sprintf(buf,"You have an initial allotment of %d stardates to complete "
-			   "your mission.  As you proceed you may be given more time.\n"
+			   "your mission. As you proceed you may be given more time. "
 			   "You will have %d supporting starbases.\n"
 			   "Starbase locations : ",
 			   (int)intime, inbase);
@@ -341,6 +337,7 @@ void setupsst(void)
 	if (neutz) attack(0);	// bad luck to start in a Romulan Neutral Zone
 }
 
+
 int choose(void) {
 	
 	tourn = 0;
@@ -351,7 +348,8 @@ int choose(void) {
 		if (fromcommandline) /* Can start with command line options */
 			fromcommandline = 0;
 		else
-			proutn((char*)"Would you like a regular, tournament, or frozen game?");
+			//proutn((char*)"Would you like a regular, tournament, or frozen game?");
+			proutn((char*)"Would you like a regular, or tournament game?");
 		scan();
 		if (quickExit) return;
 		if (strlen(citem)==0) continue; // Try again
@@ -370,6 +368,8 @@ int choose(void) {
 			break;
 		}
 		if (isit((char*)"frozen")) {
+			
+			/* We'll keep this around because we may possibly get the save function working again.
 			thaw();
 			chew();
 			if (*passwd==0) continue;
@@ -378,6 +378,10 @@ int choose(void) {
 			if (!alldone) thawed = 1; // No plaque if not finished
 			report(1);
 			return TRUE;
+			*/
+			skip(2);
+			Rand(); Rand(); Rand(); Rand();	// Do whatever regular would do.
+			break;
 		}
 		if (isit((char*)"regular")) {
 			skip(2);
@@ -393,6 +397,7 @@ int choose(void) {
 	while (length==0 || skill==0) {
 		if (scan() == IHALPHA) {
 			if (quickExit) return;
+			skip(1);
 			if (isit((char*)"short")) length = 1;
 			else if (isit((char*)"medium")) length = 2;
 			else if (isit((char*)"long")) length = 4;

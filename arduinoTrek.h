@@ -38,7 +38,7 @@ extern int min(int a, int b);
 #endif
 
 // Add to the end of your setup() function.
-void arduinoTrekSetup(void);
+void arduinoTrekSetup(char* comList);
 
 // Add to the beginning of your loop() function.
 void arduinoTrekLoop(void);

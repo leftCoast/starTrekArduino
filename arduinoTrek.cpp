@@ -41,7 +41,7 @@ void proutCh(char c) {  trekReplyBuffer->addChar(c); }
 // Ok, they want this string to be printed s-l-o-w-l-y This'll do that.
 void prouts(char* s) {
 
-	timeObj	charDelay(125);
+	timeObj	charDelay(1);//timeObj	charDelay(125); 
 	int		i;
 	
 	i = 0;
@@ -67,14 +67,17 @@ void outln(char* str) { Serial.println(str);Serial.flush(); }
 
 
 // Setup stuff for game, allocate buffers.
-void arduinoTrekSetup(void) {
+void arduinoTrekSetup(char* comList) {
 
 	trekComBuffer = new textBuff(COMBUFF_BYTES);			// Allocate your command buffer.
 	trekReplyBuffer = new textBuff(REPLYBUFF_BYTES);	// Allocate the reply buffer.
-	//trekComBuffer->addStr("r s n xxx m a 3 4 5 6 \n");						// You can preload startup commands. Good for debug otherwise comment this out.			
-	prelim();														// Who knows? Some ster Trek thing.
-	fromcommandline = 0;											// This as well is a complete mystery.
-}
+	fromcommandline = 0;											// This basically says, ask all the questions.
+	if (strlen(comList)) {										// If they passed in a string of commands..
+		trekComBuffer->addStr(comList,false);				// You can preload startup commands.
+		fromcommandline = 1;										// This is saying, see what they sent before asking.
+	}		
+	prelim();														// Prints out the initial game header, -STAR TREK- bla bla bla.
+}  
 
 
 // Loop stuff. This actually blocks the loop for the entire game. Win, loose, or exit is

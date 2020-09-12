@@ -412,7 +412,7 @@ int runsst (int argc, char **argv)
         freeze(FALSE);
       }
     }
-    prout((char*)"Do you want to play again?");
+    proutn((char*)"Do you want to play again?");
     if (!ja()) break;
   }
   skip(1);
@@ -558,13 +558,13 @@ int scan(void) {
 	int	i;
 	char*	cp;
 
-	if (quickExit) return;
+	if (quickExit) return;																		// If the user has called it quits in the UI.. Cut & run.
 	linecount = 0;																					// The global linecount gets defaulted to zero.
 	aaitem = 0.0;																					// The global aaitem gets defaulted to a zero.
 	*citem = 0;																						// The global citem gets defaulted to empty string.
 	if (*linep == 0) {																			// If linep is pointing at \0..
 		if (linep != line) {																		// If the line ptr is not pointing at the beginning of the line buff..
-			chew();																					// chew() makes linecont = 0 and points the line ptr at the beginning of the line buff.
+			chew();																					// chew() makes linecont = 0 and clears the line buff.
 			return IHEOL;																			// return IHEOL.. Need to look that up.
 		}
 		gets(line, sizeof(line));																// gets() will spin on getch() until it gets a '\n'. Does not copy the '\n';
@@ -601,14 +601,14 @@ int scan(void) {
 
 int ja(void) {
   
-  chew();
-  while (TRUE) {
-    scan();
-    if (quickExit) return;
-    chew();
-    if (*citem == 'y') return TRUE;
-    if (*citem == 'n') return FALSE;
-    proutn((char*)"Please answer with \"Y\" or \"N\":");
+  chew();																	// Clear incoming stream.
+  while (TRUE) {															// While forever do..
+    scan();																	// Grab a token from the incoming stream.
+    if (quickExit) return;												// If the user has called it quits in the UI.. Cut & run.
+    chew();																	// Clear incoming stream.
+    if (*citem == 'y') return TRUE;									// Looks like a yes, we'll go with that.
+    if (*citem == 'n') return FALSE;								// Looks like a no, that's fine too.
+    proutn((char*)"Please answer with \"Y\" or \"N\":");		// We're only looking for a yes / no here.
   }
 }
 
@@ -642,17 +642,17 @@ void pause(int i) {
   proutCh('\n');
   if (i == 1) {
     if (skill > SFAIR)
-      prout((char*)"[ANNOUNCEMENT ARRIVING...]");
+      prout((char*)"[ ANNOUNCEMENT ARRIVING... ]");
     else
-      prout((char*)"[IMPORTANT ANNOUNCEMENT ARRIVING -- HIT ENTER TO CONTINUE]");
+      prout((char*)"[ IMPORTANT ANNOUNCEMENT ARRIVING -- HIT ENTER TO CONTINUE ]");
     getch();
     if (quickExit) return;
   }
   else {
     if (skill > SFAIR)
-      proutn((char*)"[CONTINUE?]");
+      proutn((char*)"[ CONTINUE? ]");
     else
-      proutn((char*)"[HIT ENTER TO CONTINUE]");
+      proutn((char*)"[ HIT ENTER TO CONTINUE ]");
     getch();
     if (quickExit) return;
     proutn((char*)"\r                           \r");

@@ -10,24 +10,32 @@ void dstrct() {
 		return;
 	}
 	skip(1);
+	proutn((char*)"            ");
 	prouts((char*)"---WORKING---"); skip(1);
+	proutn((char*)"   ");
 	prout((char*)"SELF-DESTRUCT-SEQUENCE-ACTIVATED");
 	prouts((char*)"   10"); skip(1);
 	prouts((char*)"       9"); skip(1);
 	prouts((char*)"          8"); skip(1);
 	prouts((char*)"             7"); skip(1);
 	prouts((char*)"                6"); skip(1);
-	prout((char*)"ENTER-CORRECT-PASSWORD-TO-CONTINUE-");
-	prout((char*)"SELF-DESTRUCT-SEQUENCE-OTHERWISE-");
-	prout((char*)"SELF-DESTRUCT-SEQUENCE-WILL-BE-ABORTED");
+	proutn((char*)"  ");
+	prout((char*)"ENTER-CORRECT-PASSWORD-TO-CONTINUE");
+	proutn((char*)"  ");
+	prout((char*)"      SELF-DESTRUCT-SEQUENCE");
+	proutn((char*)"  ");
+	prout((char*)"OTHERWISE-SEQUENCE-WILL-BE-ABORTED");
 	scan();
 	chew();
 	if (strcmp(passwd, citem) != 0) {
-		prouts((char*)"PASSWORD-REJECTED;"); skip(1);
+		proutn((char*)"          ");
+		prouts((char*)" PASSWORD-REJECTED");skip(1);
+		proutn((char*)"          ");
 		prout((char*)"CONTINUITY-EFFECTED");
 		skip(1);
 		return;
 	}
+	proutn((char*)"          ");
 	prouts((char*)"PASSWORD-ACCEPTED"); skip(1);
 	prouts((char*)"                   5"); skip(1);
 	prouts((char*)"                      4"); skip(1);
@@ -35,6 +43,7 @@ void dstrct() {
 	prouts((char*)"                            2"); skip(1);
 	prouts((char*)"                              1"); skip(1);
 	if (Rand() < 0.15) {
+		proutn((char*)"  ");
 		prouts((char*)"GOODBYE-CRUEL-WORLD");
 		skip(1);
 	}
@@ -44,10 +53,10 @@ void dstrct() {
 
 void kaboom(void) {
 	stars();
-	if (ship==IHE) prouts((char*)"***");
-	prouts((char*)"********* Entropy of ");
+	if (ship==IHE) prouts((char*)"*");
+	prouts((char*)"* Entropy of ");
 	crmshp();
-	prouts((char*)" maximized *********");
+	prouts((char*)" maximized **");
 	skip(1);
 	stars();
 	skip(1);
@@ -204,7 +213,7 @@ void superNovaDeath(void) {
 }
 
 
-// Captured death. So many ways to di huh?
+// Captured death. So many ways to die huh?
 void capturedDeath(void) {
 
 	prout((char*)"You have been captured by the Klingons. If you still");
@@ -214,8 +223,8 @@ void capturedDeath(void) {
 }	
 
 
-// Not sure what this one is..
-void vaporizeDeath(void) { prout((char*)"Your starship is now an expanding cloud of subatomic particles"); }
+//Self destruct death..
+void vaporizeDeath(void) { prout((char*)"Your starship is now an expanding cloud of subatomic particles."); }
 
 
 	
@@ -410,14 +419,13 @@ void finish(FINTYPE ifin) {
 					proutn((char*)"In fact, you have done so well that Starfleet Command ");
 					igotit = doPromotion();
 				}
-				//skip(1);
 				prout((char*)"       LIVE LONG AND PROSPER."); // Only grant long life if alive. (original didn't!)
 			}
 			score(0);
 			if (igotit != 0) {
 				plaque();
 			}
-		return;
+		return;	// End of case "You won".
 		
 		// from here on down its not a total victory, death, destruction. Battle to a draw..
 		case FDEPLETE:			resourceDepleted();		return;

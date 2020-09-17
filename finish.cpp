@@ -510,7 +510,7 @@ void score(int inGame) {
 	iscore += 3*kcaptured;
 #endif
 	if (alive == 0) iscore -= 200;
-	skip(2);
+	clearscreen();
 	if (inGame) {
 		prout((char*)"Your score so far --");
 	} else {

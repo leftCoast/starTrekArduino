@@ -72,11 +72,11 @@ void arduinoTrekSetup(char* comList) {
 	trekComBuffer = new textBuff(COMBUFF_BYTES);			// Allocate your command buffer.
 	trekReplyBuffer = new textBuff(REPLYBUFF_BYTES);	// Allocate the reply buffer.
 	fromcommandline = 0;											// This basically says, ask all the questions.
+	prelim();														// Prints out the initial game header, -STAR TREK- bla bla bla.
 	if (strlen(comList)) {										// If they passed in a string of commands..
 		trekComBuffer->addStr(comList,false);				// You can preload startup commands.
 		fromcommandline = 1;										// This is saying, see what they sent before asking.
 	}		
-	prelim();														// Prints out the initial game header, -STAR TREK- bla bla bla.
 }  
 
 

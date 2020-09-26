@@ -492,27 +492,28 @@ void stars(void) {
   	skip(1);
 }
 
+
+// I really wonder what this does. -jim lee
 double expran(double avrage) 
-{
-  return -avrage * log(1e-7 + Rand());
+{ return -avrage * log(1e-7 + Rand()); }
+
+
+// Now uses the Arduino random seed thing. (See arduinoTrek.cpp) - jim lee
+double Rand(void) { return random(0,RAND_MAX) / (1.0 + (double)RAND_MAX); }
+
+
+// Also now uses the Arduino random seed thing. - jim lee
+void iran8(int *i, int *j) {
+
+  *i = random(1,9);
+  *j = random(1,9);
 }
 
-double Rand(void) 
-{
-  return rand() / (1.0 + (double)RAND_MAX);
-}
+// And this as well now uses the random seed thing. - jim lee
+void iran10(int *i, int *j) {
 
-void iran8(int *i, int *j) 
-{
-  *i = Rand() * 8.0 + 1.0;
-  *j = Rand() * 8.0 + 1.0;
-}
-
-
-void iran10(int *i, int *j) 
-{
-  *i = Rand() * 10.0 + 1.0;
-  *j = Rand() * 10.0 + 1.0;
+  *i = random(1,11);
+  *j = random(1,11); 
 }
 
 
@@ -530,7 +531,7 @@ void chew2(void) {
 	line[1] = '\0';
 }
 
-
+// Get a string from the user. Re-written for Arduino. -jim lee
 void gets(char* str,int len) {
 
 	char	ch;
@@ -538,7 +539,7 @@ void gets(char* str,int len) {
 
 	while(count<len-1) {					// While we have not run out of buffer..
 		ch = (char)getch();				// Grab a char.
-		if (quickExit) return;
+		if (quickExit) return;			// If the close has been called.. Bolt!
 		if(ch=='\n' || ch=='\0') {		// If its either a '\n' or '\0'..
 			str[count]='\0';				// Stuff in a '\0'.
 			return;							// And we are done!
@@ -553,6 +554,7 @@ void gets(char* str,int len) {
 
 // We must scan the incoming stream of characters for a double value token or a text
 // token. Where we are in the input string is saved by the gloabal linep.
+// I wrote the comments working out what this was doing - jim lee
 int scan(void) {
 
 	int	i;
@@ -565,7 +567,7 @@ int scan(void) {
 	if (*linep == 0) {																			// If linep is pointing at \0..
 		if (linep != line) {																		// If the line ptr is not pointing at the beginning of the line buff..
 			chew();																					// chew() makes linecont = 0 and clears the line buff.
-			return IHEOL;																			// return IHEOL.. Need to look that up.
+			return IHEOL;																			// return IHEOL.. Need to look that up. (I think it means "I Have End Of Line" but I'm not positive.)
 		}
 		gets(line, sizeof(line));																// gets() will spin on getch() until it gets a '\n'. Does not copy the '\n';
 		if (quickExit) return;

@@ -3,7 +3,7 @@
 #include "timeObj.h"
 #include "sst.h"
 
-
+#define	UNCONNECTED_ANALOG_PIN	A20
 // We need to shut this nonsense off NOW!
 bool	quickExit = false;
 
@@ -68,7 +68,7 @@ void outln(char* str) { Serial.println(str);Serial.flush(); }
 
 // Setup stuff for game, allocate buffers.
 void arduinoTrekSetup(char* comList) {
-
+			
 	trekComBuffer = new textBuff(COMBUFF_BYTES);			// Allocate your command buffer.
 	trekReplyBuffer = new textBuff(REPLYBUFF_BYTES);	// Allocate the reply buffer.
 	fromcommandline = 0;											// This basically says, ask all the questions.
@@ -84,8 +84,12 @@ void arduinoTrekSetup(char* comList) {
 // what drops you out of the this call. There needs to be an idler function that feeds in
 // command chars and route's the output to wherever it goes.i
 void arduinoTrekLoop(void) {
-
-	setupsst();
+	
+	long int	seed;
+	
+	seed = analogRead(UNCONNECTED_ANALOG_PIN);				// Tired of playing the same old game every time?
+	randomSeed(seed);													// Reading an unconnected analog port for a random seed will mix it up
+	setupsst();															
 	if (quickExit) return;
 	if (alldone) {
 		score(0);

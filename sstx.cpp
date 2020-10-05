@@ -102,7 +102,6 @@ static void listCommands(int x) {
         "TRANSPORT MINE    CRYSTALS SHUTTLE\n"
         "PLANETS   REQUEST DEATHRAY FREEZE\n"
         "COMPUTER  EMEXIT  PROBE    COMMANDS");
-  //proutn((char*)"   ");
 #ifdef SCORE
   proutn((char*)"SCORE     ");
 #endif
@@ -277,9 +276,6 @@ static void makemoves(void) {
       case 24: // Emergency exit
         clearscreen(); // Hide screen
         freeze(TRUE); // forced save
-        //exit(1); // And quick exit
-        prout((char*)"Tried to Exit - can't");
-        //close();	// even close doesn't work. Odd.
         alldone = 1; // quit the game.
         quickExit = true;
         return;

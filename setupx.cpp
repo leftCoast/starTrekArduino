@@ -71,7 +71,56 @@ void freeze(int boss) {
 
 }
 
-void thaw(void) { }
+void thaw(void) {
+
+	int key;
+	char*	filePath;
+	bool haveFile;
+	
+	passwd[0] = '\0';
+	if ((key = scan()) == IHEOL) {
+		proutn("File name: ");
+		key = scan();
+	}
+	if (key != IHALPHA) {
+		huh();
+		return;
+	}
+	chew();
+	if (strchr(citem, '.') == NULL) {
+		strcat(citem, ".trk");
+	}
+	filePath = (char*)malloc(strlen(citem)+strlen(FILE_PATH)+1);
+	strcpy(filePath,FILE_PATH);
+	strcat(filePath,citem);
+	haveFile = openForRead(filePath);
+	free(filePath);
+	if (!haveFile) {
+		prout("Can't find game file ");
+		proutn(citem);
+		skip(1);
+		return;
+	}
+	prout("Ah! found game file.");
+	readData((char*)&d, sizeof(d));
+	readData((char*)&snapsht, sizeof(snapsht));
+	readData((char*)quad, sizeof(quad));
+	readData((char*)kx, sizeof(kx));
+	readData((char*)ky, sizeof(ky));
+	readData((char*)starch, sizeof(starch));
+	readData((char*)kpower, sizeof(kpower));
+	readData((char*)kdist, sizeof(kdist));
+	readData((char*)kavgd, sizeof(kavgd));
+	readData((char*)damage, sizeof(damage));
+	readData((char*)future, sizeof(future));
+	readData((char*)&a, sizeof(a));
+	readData((char*)passwd, sizeof(passwd));
+
+	closeFile();
+
+	/* I hope that's enough! */
+}
+
 
 void abandon(void) {
 	int nb, l;
@@ -407,8 +456,7 @@ int choose(void) {
 		if (fromcommandline) /* Can start with command line options */
 			fromcommandline = 0;
 		else
-			//proutn((char*)"Would you like a regular, tournament, or frozen game?");
-			proutn((char*)"Would you like a regular, or tournament game?");
+			proutn((char*)"Would you like a regular, tournament, or frozen game?");
 		scan();
 		if (quickExit) return;
 		if (strlen(citem)==0) continue; // Try again
@@ -427,20 +475,13 @@ int choose(void) {
 			break;
 		}
 		if (isit((char*)"frozen")) {
-			
-			/* We'll keep this around because we may possibly get the save function working again.
 			thaw();
 			chew();
 			if (*passwd==0) continue;
-			//randomize();
 			Rand(); Rand(); Rand(); Rand();
 			if (!alldone) thawed = 1; // No plaque if not finished
 			report(1);
 			return TRUE;
-			*/
-			skip(2);
-			Rand(); Rand(); Rand(); Rand();	// Do whatever regular would do.
-			break;
 		}
 		if (isit((char*)"regular")) {
 			skip(2);

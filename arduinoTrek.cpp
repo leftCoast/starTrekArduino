@@ -80,7 +80,12 @@ bool openForRead(char* fullPath) {
 }
 
 
-void readData(char* data,int numBytes) {  }
+void readData(char* data,int numBytes) {
+	
+	if (fp) {
+		fp.read(data,numBytes);
+	}
+}
 
 
 void closeFile(void) {

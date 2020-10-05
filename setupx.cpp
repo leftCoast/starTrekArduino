@@ -10,7 +10,66 @@ void prelim(void) {
 	skip(1);
 }
 
-void freeze(int boss) { }
+
+
+void freeze(int boss) {
+
+	int key;
+	char*	filePath;
+	bool haveFile;
+	
+	if (boss) {
+		strcpy(citem, "emsave.trk");
+	}
+	else {
+		if ((key = scan()) == IHEOL) {
+			proutn("File name(8 characters maximum): ");
+			key = scan();
+		}
+		if (key != IHALPHA) {
+			huh();
+			return;
+		}
+		chew();
+		if (strchr(citem, '.') == NULL) {
+			strcat(citem, ".trk");
+			if (strlen(citem)>12) {
+				proutn("I said, 8 characters max! ");
+				return;
+			}
+		}
+	}
+	filePath = (char*)malloc(strlen(citem)+strlen(FILE_PATH)+1);
+	strcpy(filePath,FILE_PATH);
+	strcat(filePath,citem);
+	haveFile = openForSave(filePath);
+	free(filePath);
+	if (!haveFile) {
+		proutn("Can't freeze game as file ");
+		proutn(citem);
+		skip(1);
+		return;
+	}
+	
+	writeData((char*)&d, sizeof(d));
+	writeData((char*)&snapsht, sizeof(snapsht));
+	writeData((char*)quad, sizeof(quad));
+	writeData((char*)kx, sizeof(kx));
+	writeData((char*)ky, sizeof(ky));
+	writeData((char*)starch, sizeof(starch));
+	writeData((char*)kpower, sizeof(kpower));
+	writeData((char*)kdist, sizeof(kdist));
+	writeData((char*)kavgd, sizeof(kavgd));
+	writeData((char*)damage, sizeof(damage));
+	writeData((char*)future, sizeof(future));
+	writeData((char*)&a, sizeof(a));
+	writeData((char*)passwd, sizeof(passwd));
+
+	closeFile();
+
+	/* I hope that's enough! */
+
+}
 
 void thaw(void) { }
 
@@ -52,8 +111,8 @@ void abandon(void) {
 		skip(1);
 		prouts((char*)"***ALL HANDS ABANDON SHIP!");
 		skip(2);
-		prout((char*)"Captain and crew escape in shuttle craft.");
-		prout((char*)"Remainder of ship's complement beam down");
+		proutn((char*)"Captain and crew escape in shuttle craft. ");
+		proutn((char*)"Remainder of ship's complement beam down ");
 		prout((char*)"to nearest habitable planet.");
 		if (d.rembase==0) {
 			/* Ops! no place to go... */
@@ -64,7 +123,7 @@ void abandon(void) {
 		skip(1);
 		icrystl = 0; /* crystals are lost */
 		nprobes = 0; /* No probes */
-		prout((char*)"You are captured by Klingons and released to");
+		proutn((char*)"You are captured by Klingons and released to ");
 		prout((char*)"the Federation in a prisoner-of-war exchange.");
 		nb = Rand()*d.rembase+1;
 		/* Set up quadrant and position FQ adjacient to base */
@@ -92,8 +151,8 @@ void abandon(void) {
 	}
 	/* Get new commission */
 	quad[sectx][secty] = ship = IHF;
-	prout((char*)"Starfleet puts you in command of another ship,");
-	prout((char*)"the Faerie Queene, which is antiquated but,");
+	proutn((char*)"Starfleet puts you in command of another ship, ");
+	proutn((char*)"the Faerie Queene, which is antiquated but, ");
 	prout((char*)"still usable.");
 	if (icrystl!=0) prout((char*)"The dilithium crystals have been moved.");
 	imine=0;

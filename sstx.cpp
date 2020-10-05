@@ -552,7 +552,7 @@ void gets(char* str,int len) {
 }
 
 
-// We must scan the incoming stream of characters for a double value token or a text
+// We must scan the incoming stream of characters for a value token or a text
 // token. Where we are in the input string is saved by the gloabal linep.
 // I wrote the comments working out what this was doing - jim lee
 int scan(void) {

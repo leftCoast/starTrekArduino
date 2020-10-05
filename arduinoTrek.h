@@ -1,6 +1,7 @@
 #ifndef arduinoTrek_h
 #define arduinoTrek_h
 
+#include <SD.h>
 #include "textBuff.h"
 
 
@@ -27,6 +28,18 @@ extern void proutCh(char c);
 
 // Ok, they want this string to be printed s-l-o-w-l-y This'll do that.
 extern void prouts(char* s);
+
+// save game, start from saved..
+extern bool openForSave(char* fullpath);
+
+extern void writeData(char* data,int numBytes);
+
+extern bool openForRead(char* fullPath);
+
+extern void readData(char* data,int numBytes);
+
+extern void closeFile(void);
+
 
 // For debugging. Sends to serial monitor.
 extern void out(char* str);		// No \n

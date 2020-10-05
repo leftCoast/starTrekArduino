@@ -396,8 +396,12 @@ void abandon(void);
 void finish(FINTYPE);
 void dstrct(void);
 void kaboom(void);
+
+#define FILE_PATH	"/starTrek/"
 void freeze(int);
 void thaw(void);
+
+
 void plaque(void);
 int scan(void);
 #define IHEOL (0)
@@ -457,7 +461,13 @@ void clearscreen(void);
 // Arduino stuff
 void out(char* str);
 void outln(char* str);
-extern bool	quickExit;
+extern bool quickExit;
+bool openForSave(char* fullpath);
+void writeData(char* data,int numBytes);
+bool openForRead(char* fullPath);
+void readData(char* data,int numBytes);
+void closeFile();
+
 
 #ifndef WINDOWS
 #undef min

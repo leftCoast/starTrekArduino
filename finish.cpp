@@ -136,17 +136,17 @@ int doPromotion(void) {
 // Federation Resources Depleted
 void resourceDepleted(void) {
 			
-	prout((char*)"Your time has run out and the Federation has been");
-	prout((char*)"conquered.  Your starship is now Klingon property,");
-	prout((char*)"and you are put on trial as a war criminal.  On the");
-	proutn((char*)"basis of your record, you are ");
+	proutn((char*)"Your time has run out and the Federation has been");
+	proutn((char*)" conquered.  Your starship is now Klingon property,");
+	proutn((char*)" and you are put on trial as a war criminal. On the");
+	proutn((char*)" basis of your record, you are ");
 	if (d.remkl*3.0 > inkling) {
 		prout((char*)"aquitted.");
 		skip(1);
 		prout((char*)"LIVE LONG AND PROSPER.");
 	}
 	else {
-		prout((char*)"found guilty and");
+		proutn((char*)"found guilty and");
 		prout((char*)"sentenced to death by slow torture.");
 		alive = 0;
 	}
@@ -157,8 +157,9 @@ void resourceDepleted(void) {
 // Life support has run out, you died.
 void noLifeSupport(void) {
 
-	prout((char*)"Your life support reserves have run out, and");
-	prout((char*)"you die of thirst, starvation, and asphyxiation.");
+	proutn((char*)"Your life support reserves have run out, and");
+	prout((char*)" you die of thirst, starvation, and asphyxiation.");
+	skip(1);
 	prout((char*)"Your starship is a derelict in space.");
 }
 
@@ -186,8 +187,8 @@ void battleDeath(void) {
 // Repeated off map death.
 void boundryDeath(void) {
 
-	prout((char*)"You have made three attempts to cross the negative energy");
-	prout((char*)"barrier which surrounds the galaxy.");
+	proutn((char*)"You have made three attempts to cross the negative energy");
+	prout((char*)" barrier which surrounds the galaxy.");
 	skip(1);
 	prout((char*)"Your navigation is abominable.");
 	score(0);
@@ -216,10 +217,10 @@ void superNovaDeath(void) {
 // Captured death. So many ways to die huh?
 void capturedDeath(void) {
 
-	prout((char*)"You have been captured by the Klingons. If you still");
-	prout((char*)"had a starbase to be returned to, you would have been");
-	prout((char*)"repatriated and given another chance. Since you have");
-	prout((char*)"no starbases, you will be mercilessly tortured to death.");
+	proutn((char*)"You have been captured by the Klingons. If you still");
+	proutn((char*)" had a starbase to be returned to, you would have been");
+	proutn((char*)" repatriated and given another chance. Since you have");
+	prout((char*)" no starbases, you will be mercilessly tortured to death.");
 }	
 
 
@@ -245,14 +246,14 @@ void phaserDeath(void) {
 
 void vaporPartyDeath(void) {
 
-	prout((char*)"You and your landing party have been");
+	proutn((char*)"You and your landing party have been");
 	prout((char*)"converted to energy, dissipating through space.");
 }
 
 
 void	strandedDeath(void) {
 
-	prout((char*)"You are left with your landing party on");
+	proutn((char*)"You are left with your landing party on ");
 	prout((char*)"a wild jungle planet inhabited by primitive cannibals.");
 	skip(1);
 	prout((char*)"They are very fond of \"Captain Kirk\" soup.");
@@ -278,17 +279,17 @@ void shuttleCookedDeath(void) {
 	skip(1);
 	proutn((char*)"Mr. Spock takes command of the ");
 	crmshp();
-	prout((char*)" and");
+	proutn((char*)" and");
 	prout((char*)"joins the Romulans, reigning terror on the Federation.");
 }	
 
 
 void shuttleBreakupDeath(void) {
 
-	prout((char*)"The shuttle craft Galileo is also caught,");
+	proutn((char*)"The shuttle craft Galileo is also caught,");
 	prout((char*)"and breaks up under the strain.");
 	skip(1);
-	prout((char*)"Your debris is scattered for millions of miles.");
+	proutn((char*)"Your debris is scattered for millions of miles.");
 	proutn((char*)"Without your leadership, the ");
 	crmshp();
 	prout((char*)" is destroyed.");
@@ -297,15 +298,15 @@ void shuttleBreakupDeath(void) {
 
 void mutantDeath(void) {
 
-	prout((char*)"The mutants attack and kill Spock.");
-	prout((char*)"Your ship is captured by Klingons, and");
+	proutn((char*)"The mutants attack and kill Spock.");
+	proutn((char*)"Your ship is captured by Klingons, and");
 	prout((char*)"your crew is put on display in a Klingon zoo.");
 }	
 
 
 void tribbleDeath(void) {
 
-	prout((char*)"Tribbles consume all remaining water,");
+	proutn((char*)"Tribbles consume all remaining water,");
 	prout((char*)"food, and oxygen on your ship.");
 	skip(1);
 	prout((char*)"You die of thirst, starvation, and asphyxiation.");
@@ -315,7 +316,7 @@ void tribbleDeath(void) {
 
 void blackHoleDeath(void) {
 
-	prout((char*)"Your ship is drawn to the center of the black hole.");
+	proutn((char*)"Your ship is drawn to the center of the black hole.");
 	prout((char*)"You are crushed into extremely dense matter.");
 }
 
@@ -348,8 +349,8 @@ void fuzzyEnding(void) {
 		double goodies = d.remres/inresor;
 		double baddies = (d.remkl + 2.0*d.remcom)/(inkling+2.0*incom);
 		if (goodies/baddies >= 1.0+0.5*Rand()) {
-			prout((char*)"As a result of your actions, a treaty with the Klingon");
-			prout((char*)"Empire has been signed. The terms of the treaty are");
+			proutn((char*)"As a result of your actions, a treaty with the Klingon");
+			proutn((char*)"Empire has been signed. The terms of the treaty are");
 			if (goodies/baddies >= 3.0+Rand()) {
 				prout((char*)"favorable to the Federation.");
 				skip(1);

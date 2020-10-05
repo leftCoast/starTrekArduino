@@ -53,6 +53,44 @@ void prouts(char* s) {
 	}
 }
 
+
+// save game, start from saved..
+
+File fp;
+
+bool openForSave(char* fullpath) {
+	
+	fp = SD.open(fullpath, FILE_WRITE);
+	return fp != 0;
+}
+
+
+void writeData(char* data,int numBytes) {
+	
+	if (fp) {
+		fp.write(data,numBytes);
+	}
+}
+
+
+bool openForRead(char* fullPath) {
+	
+	fp = SD.open(fullPath, FILE_READ);
+	return fp != 0;
+}
+
+
+void readData(char* data,int numBytes) {  }
+
+
+void closeFile(void) {
+
+	if (fp) {
+		fp.close();
+	}
+}
+
+
 #ifndef min
 // It needs this.
 int min(int a, int b) {

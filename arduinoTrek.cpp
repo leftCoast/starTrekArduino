@@ -1,6 +1,7 @@
 #include "arduinoTrek.h"
 #include "idlers.h"
 #include "timeObj.h"
+#include "resizeBuff.h"
 #include "sst.h"
 
 #define	UNCONNECTED_ANALOG_PIN	A20
@@ -22,7 +23,6 @@ int getch() {
 	while (trekComBuffer->empty()) {
 		sleep(10);
 		if (quickExit) {
-			out("getch() got quick");
 			return ((int)'\n');
 		}
 	}
@@ -54,10 +54,114 @@ void prouts(char* s) {
 }
 
 
+
 // save game, start from saved..
 
-File fp;
 
+
+// ************************* Directory object *************************
+
+
+dirItem::dirItem(char* inName)
+	: linkListObj() {
+	
+	int numBytes;
+	
+	mName = NULL;
+	numBytes = strlen(inName)+1;
+	if(numBytes) {
+		if (resizeBuff(numBytes,&mName)) {
+			strcpy(mName,inName);
+		}
+	}
+}
+	
+	
+dirItem::~dirItem(void) { resizeBuff(0,&mName); }
+
+	
+char* dirItem::getName(void) { return mName; }
+				
+
+dirList::dirList(void)
+	: linkList() {  }
+	
+	
+dirList::~dirList(void) {  }
+	
+	
+int dirList::readDir(char* path) {
+
+	File  	dir;																		// File handle used for the current directory.
+	File  	entry;                                                   // File handle used for the different entries of the current directory.
+	char		fileName[15];
+	dirItem*	newItem;
+	bool  	done;                                                    // A boolean used to track when to stop all this nonsense.
+
+	dumpList();																			// Clear the list for a new set.
+	dir = SD.open(path);																// Try opening the directory.
+	if (dir) {																			// If we were able to open the working directory..
+		dir.rewindDirectory();														// Rewind it to the first entry.
+		done = false;																	// We ain't done yet.
+		do {																				// Start looping through the entries.
+			entry = dir.openNextFile();											// Grab an entry.
+			if (entry) {																// If we got an entry..
+				strcpy(fileName,entry.name());									// Grab the name.
+				if (entry.isDirectory()) {											// If the entry is a directory..
+					strcat(fileName,"/");											// Toss on a slash.
+				}
+				if (!strstr(fileName,"~1.")) {
+					newItem = new dirItem(fileName);									// Create the list item.
+					addToTop(newItem);													// Pop it in the list.
+					entry.close();                                            // And we close the entry.
+				}
+			} else {                                                    // Else, we didn't get an entry from above.
+				done = true;                                              // No entry means, we are done here.
+			}
+		} while (!done);                                              	// And we do this loop, over and over, while we are not done.
+		dir.close();                                                  	// Looping through entries is done, close up the original file.
+	} else {                                                        	// If this worked correctly, we'd know there was an error at this point.                                        
+		Serial.println("Fail to open file.");                         	// Sadly, instead of returning a NULL, it just crashes.
+	}
+}
+
+
+char* dirList::getDirItem(int index) {
+
+	dirItem* anItem;
+	
+	anItem = getByIndex(index);
+	if (anItem) {
+		return anItem->getName();
+	}
+	return NULL;
+}
+
+
+// ************************* file code *************************
+
+dirList	ourDirList;
+File		fp;
+
+int readDir(char* path) {
+
+	ourDirList.readDir(path);
+	return ourDirList.getCount();
+}
+
+
+int numDirItems() { return ourDirList.getCount(); }
+
+
+char* getDirItem(int index) { 
+
+	char*	dirItem;
+	
+	dirItem = ourDirList.getDirItem(index);
+	return dirItem;
+}
+
+			
 bool openForSave(char* fullpath) {
 	
 	fp = SD.open(fullpath, FILE_WRITE);
@@ -93,7 +197,11 @@ void closeFile(void) {
 	if (fp) {
 		fp.close();
 	}
+	ourDirList.dumpList();
 }
+
+// **********************  End file code *************************
+
 
 
 #ifndef min

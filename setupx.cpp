@@ -11,6 +11,42 @@ void prelim(void) {
 }
 
 
+void listFiles(char* path) {
+
+	char	row[40];
+	char*	item;
+	char*	dot;
+	int	numItems;
+	int 	index;
+	int	numBlanks;
+	int	i;
+	int	j;
+	
+	numItems = readDir(path);
+	if (numItems>0) {
+		index = 0;
+		while(index<numItems) {
+			row[0] = '\0';
+			for (j=0;j<3;j++) {
+				item = getDirItem(index++);
+				dot = strchr(item,'.');
+				if (dot) {
+					dot[0] = '\0';					// Clip off the .trk bit. Who needs to see it?
+				}
+				strcat(row,item);
+				numBlanks = 12-strlen(item);
+				for (i=0;i<numBlanks;i++) {
+					strcat(row," ");
+				}
+			}
+			row[34] = '\0';						// Truncate it.
+			proutn("   ");
+			prout(row);
+		}
+		closeFile();
+	}
+}
+
 
 void freeze(int boss) {
 
@@ -101,7 +137,6 @@ void thaw(void) {
 		skip(1);
 		return;
 	}
-	prout("Ah! found game file.");
 	readData((char*)&d, sizeof(d));
 	readData((char*)&snapsht, sizeof(snapsht));
 	readData((char*)quad, sizeof(quad));
@@ -456,7 +491,8 @@ int choose(void) {
 		if (fromcommandline) /* Can start with command line options */
 			fromcommandline = 0;
 		else
-			proutn((char*)"Would you like a regular, tournament, or frozen game?");
+			//proutn((char*)"Would you like a regular, tournament, or frozen game?");
+			proutn((char*)"Would you like a regular or frozen game?");
 		scan();
 		if (quickExit) return;
 		if (strlen(citem)==0) continue; // Try again
@@ -475,6 +511,11 @@ int choose(void) {
 			break;
 		}
 		if (isit((char*)"frozen")) {
+			clearscreen();
+			prout(" List of frozen games to choose from.");
+			prout("--------------------------------------");
+			listFiles(FILE_PATH);
+			skip(1);
 			thaw();
 			chew();
 			if (*passwd==0) continue;

@@ -2,8 +2,8 @@
 #define arduinoTrek_h
 
 #include <SD.h>
-#include "textBuff.h"
-
+#include <textBuff.h>
+#include <lists.h>
 
 #define COMBUFF_BYTES	80
 #define REPLYBUFF_BYTES	750
@@ -30,6 +30,30 @@ extern void proutCh(char c);
 extern void prouts(char* s);
 
 // save game, start from saved..
+
+class dirItem :	public linkListObj {
+
+	public:
+					dirItem(char* inName);
+	virtual		~dirItem(void);
+	
+				char*	getName();
+				
+				char*	mName;
+};
+
+
+class dirList :	public linkList {
+
+	public:
+						dirList(void);
+	virtual			~dirList(void);
+	
+						int readDir(char* path);
+						char* getDirItem(int index);
+};
+
+
 extern bool openForSave(char* fullpath);
 
 extern void writeData(char* data,int numBytes);

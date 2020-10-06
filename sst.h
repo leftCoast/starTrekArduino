@@ -462,6 +462,9 @@ void clearscreen(void);
 void out(char* str);
 void outln(char* str);
 extern bool quickExit;
+
+int readDir(char*path);
+char* getDirItem(int index);
 bool openForSave(char* fullpath);
 void writeData(char* data,int numBytes);
 bool openForRead(char* fullPath);

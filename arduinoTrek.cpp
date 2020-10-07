@@ -4,7 +4,12 @@
 #include "resizeBuff.h"
 #include "sst.h"
 
-#define	UNCONNECTED_ANALOG_PIN	A20
+#define	UNCONNECTED_ANALOG_PIN	A20	// Used for getting really random seed numbers.
+
+
+// You can clear this after successfully calling SD.begin().
+extern bool SDDriveReady = false;
+
 // We need to shut this nonsense off NOW!
 bool	quickExit = false;
 
@@ -144,60 +149,87 @@ dirList	ourDirList;
 File		fp;
 
 int readDir(char* path) {
-
-	ourDirList.readDir(path);
-	return ourDirList.getCount();
+	
+	if (SDDriveReady) {
+		ourDirList.readDir(path);
+		return ourDirList.getCount();
+	}
+	return 0;
 }
 
 
-int numDirItems() { return ourDirList.getCount(); }
+int numDirItems() {
+
+	if (SDDriveReady) {
+		return ourDirList.getCount();
+	}
+	return 0;
+}
 
 
 char* getDirItem(int index) { 
 
 	char*	dirItem;
 	
-	dirItem = ourDirList.getDirItem(index);
-	return dirItem;
+	if (SDDriveReady) {
+		dirItem = ourDirList.getDirItem(index);
+		return dirItem;
+	}
+	return NULL;
 }
 
 			
 bool openForSave(char* fullpath) {
 	
-	fp = SD.open(fullpath, FILE_WRITE);
-	return fp != 0;
+	if (SDDriveReady) {
+		fp = SD.open(fullpath, FILE_WRITE);
+		if (fp) {
+			fp.seek(0);
+			return true;
+		}
+	}
+	return false;
 }
 
 
 void writeData(char* data,int numBytes) {
 	
-	if (fp) {
-		fp.write(data,numBytes);
+	if (SDDriveReady) {
+		if (fp) {
+			fp.write(data,numBytes);
+		}
 	}
 }
 
 
 bool openForRead(char* fullPath) {
 	
-	fp = SD.open(fullPath, FILE_READ);
-	return fp != 0;
+	if (SDDriveReady) {
+		fp = SD.open(fullPath, FILE_READ);
+		return fp != 0;
+	}
+	return false;
 }
 
 
 void readData(char* data,int numBytes) {
 	
-	if (fp) {
-		fp.read(data,numBytes);
+	if (SDDriveReady) {
+		if (fp) {
+			fp.read(data,numBytes);
+		}
 	}
 }
 
 
 void closeFile(void) {
 
-	if (fp) {
-		fp.close();
+	if (SDDriveReady) {
+		if (fp) {
+			fp.close();
+		}
+		ourDirList.dumpList();
 	}
-	ourDirList.dumpList();
 }
 
 // **********************  End file code *************************

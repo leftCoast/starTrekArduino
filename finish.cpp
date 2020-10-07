@@ -349,8 +349,8 @@ void fuzzyEnding(void) {
 		double goodies = d.remres/inresor;
 		double baddies = (d.remkl + 2.0*d.remcom)/(inkling+2.0*incom);
 		if (goodies/baddies >= 1.0+0.5*Rand()) {
-			proutn((char*)"As a result of your actions, a treaty with the Klingon");
-			proutn((char*)"Empire has been signed. The terms of the treaty are");
+			proutn((char*)"As a result of your actions, a treaty with the Klingon ");
+			proutn((char*)"Empire has been signed. The terms of the treaty are ");
 			if (goodies/baddies >= 3.0+Rand()) {
 				prout((char*)"favorable to the Federation.");
 				skip(1);
@@ -362,9 +362,9 @@ void fuzzyEnding(void) {
 		else
 			prout((char*)"The Federation will be destroyed.");
 	} else {
-		prout((char*)"Since you took the last Klingon with you, you are a");
-		prout((char*)"martyr and a hero. Someday maybe they'll erect a");
-		prout((char*)"statue in your memory. Rest in peace, and try not");
+		proutn((char*)"Since you took the last Klingon with you, you are a ");
+		proutn((char*)"martyr and a hero. Someday maybe they'll erect a ");
+		proutn((char*)"statue in your memory. Rest in peace, and try not ");
 		prout((char*)"to think about pigeons.");
 		gamewon = 1;
 	}

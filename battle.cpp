@@ -220,8 +220,8 @@ void sheild(int i) {
 	}
 }
 
-void ram(int ibumpd, int ienm, int ix, int iy) 
-{
+void ram(int ibumpd, int ienm, int ix, int iy) {
+
 	double type = 1.0, extradm;
 	int icas, l;
 	
@@ -237,10 +237,10 @@ void ram(int ibumpd, int ienm, int ix, int iy)
 		case IHS: type = 2.5; break;
 		case IHT: type = 0.5; break;
 	}
-        if(ibumpd)
-          proutn((char*)" rammed by ");
-         else
-           proutn((char*)" rams ");
+	if(ibumpd)
+		proutn((char*)" rammed by ");
+	else
+		proutn((char*)" rams ");
 	crmena(0, ienm, 2, ix, iy);
 	if (ibumpd) proutn((char*)" (original position)");
 	skip(1);

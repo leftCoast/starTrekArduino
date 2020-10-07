@@ -8,6 +8,10 @@
 #define COMBUFF_BYTES	80
 #define REPLYBUFF_BYTES	750
 
+// Do we or do we NOT have a functioning SD drive? Only set to true after the SD.being()
+// has been called successfully.
+extern bool SDDriveReady;
+
 // Our output buffer that the ported code will see.
 extern textBuff*	trekComBuffer;
 

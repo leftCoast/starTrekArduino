@@ -44,6 +44,8 @@ void listFiles(char* path) {
 			prout(row);
 		}
 		closeFile();
+	} else {
+		prout((char*)"            No files to list\n");
 	}
 }
 
@@ -106,6 +108,7 @@ void freeze(int boss) {
 	/* I hope that's enough! */
 
 }
+
 
 void thaw(void) {
 

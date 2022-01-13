@@ -4,7 +4,7 @@
 #include "resizeBuff.h"
 #include "sst.h"
 
-#define	UNCONNECTED_ANALOG_PIN	A20	// Used for getting really random seed numbers.
+#define	UNCONNECTED_ANALOG_PIN	A10	// Used for getting really random seed numbers.
 
 
 // You can clear this after successfully calling SD.begin().

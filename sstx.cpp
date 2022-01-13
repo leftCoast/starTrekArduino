@@ -616,11 +616,24 @@ void cramf(double x, int w, int d) {
   proutn(buf);
 }
 
+// Teensy version..
+// void crami(int i, int w) {
+//   char buf[16];
+//   sprintf(buf, "%*d", w, i);
+//   proutn(buf);
+// }
+
+// Hack to make this work with Arduino Mega on Wokwi.
 void crami(int i, int w) {
   char buf[16];
-  sprintf(buf, "%*d", w, i);
+  for(int j=0;j<16;j++) buf[j] = ' ';
+  itoa(i,buf,10);
+  if (w<16) {
+   while(strlen(buf)<w) strcat(buf," ");
+  }
   proutn(buf);
 }
+
 
 double sqr(double i) {
   return i * i;

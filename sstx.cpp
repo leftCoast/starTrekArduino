@@ -10,7 +10,7 @@
 static char line[128], *linep = line;
 static int linecount;	/* for paging */
 
-static void clearscreen(void);
+//static void clearscreen(void);
 
 /* Compared to original version, I've changed the "help" command to
    "call" and the "terminate" command to "quit" to better match
@@ -390,13 +390,13 @@ int runsst (int argc, char **argv)
 
   while (TRUE) { /* Play a game */
     setupsst();
-     if (quickExit) return;
+     if (quickExit) return 0;
     if (alldone) {
       score(0);
       alldone = 0;
     }
     else makemoves();
-    if (quickExit) return;
+    if (quickExit) return 0;
     skip(2);
     stars();
     skip(1);
@@ -556,7 +556,7 @@ int scan(void) {
 	int	i;
 	char*	cp;
 
-	if (quickExit) return;																		// If the user has called it quits in the UI.. Cut & run.
+	if (quickExit) return 0;																		// If the user has called it quits in the UI.. Cut & run.
 	linecount = 0;																					// The global linecount gets defaulted to zero.
 	aaitem = 0.0;																					// The global aaitem gets defaulted to a zero.
 	*citem = 0;																						// The global citem gets defaulted to empty string.
@@ -566,7 +566,7 @@ int scan(void) {
 			return IHEOL;																			// return IHEOL.. Need to look that up. (I think it means "I Have End Of Line" but I'm not positive.)
 		}
 		gets(line, sizeof(line));																// gets() will spin on getch() until it gets a '\n'. Does not copy the '\n';
-		if (quickExit) return;
+		if (quickExit) return 0;
 		linep = line;																				// A fresh bit of text means we need to reset the linep pointer to the beginning of the text.
 	}
 	while (*linep == ' ') linep++;															// Skip leading white space..
@@ -575,7 +575,9 @@ int scan(void) {
 		return IHEOL;																				// return IHEOL.. Again, need to look that up.
 	}																									// At this point, linep is pointing at first non white space in the non empty global line.
 	if (isdigit(*linep) || *linep == '+' || *linep == '-' || *linep == '.') {	// If its a diget, plus, minus or period.. ( Treat it as a number. )
+		Serial.println(linep);
 		if (sscanf(linep, "%lf%n", &aaitem, &i) < 1) {									// If we can NOT find a double in this mess.. (i gets the count of chars it read.)
+			Serial.println("No double!");
 			linep = line; 																			// Reset linep to point at the beginning of line.
 			*linep = 0;																				// Stamp a '\0' at the head of line. (Effectively clearing the input.)
 			return IHEOL;																			// Return.. YOu guessed it, IHEOL.
@@ -602,7 +604,7 @@ int ja(void) {
   chew();																	// Clear incoming stream.
   while (TRUE) {															// While forever do..
     scan();																	// Grab a token from the incoming stream.
-    if (quickExit) return;												// If the user has called it quits in the UI.. Cut & run.
+    if (quickExit) return 0;											// If the user has called it quits in the UI.. Cut & run.
     chew();																	// Clear incoming stream.
     if (*citem == 'y') return TRUE;									// Looks like a yes, we'll go with that.
     if (*citem == 'n') return FALSE;								// Looks like a no, that's fine too.
@@ -616,23 +618,23 @@ void cramf(double x, int w, int d) {
   proutn(buf);
 }
 
-// Teensy version..
-// void crami(int i, int w) {
-//   char buf[16];
-//   sprintf(buf, "%*d", w, i);
-//   proutn(buf);
-// }
 
-// Hack to make this work with Arduino Mega on Wokwi.
 void crami(int i, int w) {
   char buf[16];
-  for(int j=0;j<16;j++) buf[j] = ' ';
-  itoa(i,buf,10);
-  if (w<16) {
-   while(strlen(buf)<w) strcat(buf," ");
-  }
+  sprintf(buf, "%*d", w, i);
   proutn(buf);
 }
+
+// Hack to make this work with Arduino Mega on Wokwi. Didn't work, did it?
+// void crami(int i, int w) {
+//   char buf[16];
+//   for(int j=0;j<16;j++) buf[j] = ' ';
+//   itoa(i,buf,10);
+//   if (w<16) {
+//    while(strlen(buf)<w) strcat(buf," ");
+//   }
+//   proutn(buf);
+// }
 
 
 double sqr(double i) {

@@ -497,11 +497,11 @@ int choose(void) {
 			//proutn((char*)"Would you like a regular, tournament, or frozen game?");
 			proutn((char*)"Would you like a regular or frozen game?");
 		scan();
-		if (quickExit) return;
+		if (quickExit) return 0;
 		if (strlen(citem)==0) continue; // Try again
 		if (isit((char*)"tournament")) {
 			while (scan() == IHEOL) {
-				if (quickExit) return;
+				if (quickExit) return 0;
 				proutn((char*)"Type in tournament number-");
 			}
 			if (aaitem == 0) {
@@ -540,7 +540,7 @@ int choose(void) {
 	}
 	while (length==0 || skill==0) {
 		if (scan() == IHALPHA) {
-			if (quickExit) return;
+			if (quickExit) return 0;
 			skip(1);
 			if (isit((char*)"short")) length = 1;
 			else if (isit((char*)"medium")) length = 2;
@@ -564,7 +564,7 @@ int choose(void) {
 	}
 	while (TRUE) {
 		scan();
-		if (quickExit) return;
+		if (quickExit) return 0;
 		strcpy(passwd, citem);
 		chew();
 		if (*passwd != 0) break;

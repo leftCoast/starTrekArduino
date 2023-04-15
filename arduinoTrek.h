@@ -53,7 +53,7 @@ class dirList :	public linkList {
 						dirList(void);
 	virtual			~dirList(void);
 	
-						int readDir(char* path);
+						void readDir(char* path);
 						char* getDirItem(int index);
 };
 

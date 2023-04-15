@@ -4,7 +4,7 @@
 #include "resizeBuff.h"
 #include "sst.h"
 
-#define	UNCONNECTED_ANALOG_PIN	A10	// Used for getting really random seed numbers.
+#define	UNCONNECTED_ANALOG_PIN	A1		// Used for getting really random seed numbers.
 
 
 // You can clear this after successfully calling SD.begin().
@@ -95,7 +95,7 @@ dirList::dirList(void)
 dirList::~dirList(void) {  }
 	
 	
-int dirList::readDir(char* path) {
+void dirList::readDir(char* path) {
 
 	File  	dir;																		// File handle used for the current directory.
 	File  	entry;                                                   // File handle used for the different entries of the current directory.
@@ -135,7 +135,7 @@ char* dirList::getDirItem(int index) {
 
 	dirItem* anItem;
 	
-	anItem = getByIndex(index);
+	anItem = (dirItem*)getByIndex(index);
 	if (anItem) {
 		return anItem->getName();
 	}
@@ -216,7 +216,7 @@ void readData(char* data,int numBytes) {
 	
 	if (SDDriveReady) {
 		if (fp) {
-			fp.read(data,numBytes);
+			fp.read((uint8_t*)data,numBytes);
 		}
 	}
 }

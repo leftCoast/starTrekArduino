@@ -575,9 +575,7 @@ int scan(void) {
 		return IHEOL;																				// return IHEOL.. Again, need to look that up.
 	}																									// At this point, linep is pointing at first non white space in the non empty global line.
 	if (isdigit(*linep) || *linep == '+' || *linep == '-' || *linep == '.') {	// If its a diget, plus, minus or period.. ( Treat it as a number. )
-		Serial.println(linep);
 		if (sscanf(linep, "%lf%n", &aaitem, &i) < 1) {									// If we can NOT find a double in this mess.. (i gets the count of chars it read.)
-			Serial.println("No double!");
 			linep = line; 																			// Reset linep to point at the beginning of line.
 			*linep = 0;																				// Stamp a '\0' at the head of line. (Effectively clearing the input.)
 			return IHEOL;																			// Return.. YOu guessed it, IHEOL.

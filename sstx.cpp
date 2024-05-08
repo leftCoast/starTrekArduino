@@ -138,8 +138,12 @@ static void makemoves(void) {
       chew();
       skip(1);
       proutn((char*)"COMMAND> ");
-      if (scan() == IHEOL) continue;
-      if (quickExit) return;
+      if (scan() == IHEOL) {
+      	if (quickExit) {
+      		return;
+      	}
+      	continue;
+      }
       for (i = 0; i < 29; i++) // Abbreviations allowed for the first 29 commands, only.
         if (isit(commands[i]))
           break;
@@ -556,7 +560,7 @@ int scan(void) {
 	int	i;
 	char*	cp;
 
-	if (quickExit) return 0;																		// If the user has called it quits in the UI.. Cut & run.
+	if (quickExit) return 0;																	// If the user has called it quits in the UI.. Cut & run.
 	linecount = 0;																					// The global linecount gets defaulted to zero.
 	aaitem = 0.0;																					// The global aaitem gets defaulted to a zero.
 	*citem = 0;																						// The global citem gets defaulted to empty string.
